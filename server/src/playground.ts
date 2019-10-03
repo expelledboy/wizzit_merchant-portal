@@ -40,7 +40,23 @@ mutation {
 
 `;
 
-const tabs = [authenticate, me, signup].map(query => ({
+const transactions = `
+
+query {
+  transactions {
+    uuid
+    rrn
+    stan
+    datetime
+    type
+    amt
+    respCode
+    authCode
+  }
+}
+
+`;
+const tabs = [authenticate, me, signup, transactions].map(query => ({
   endpoint: "/gql",
   query
 }));

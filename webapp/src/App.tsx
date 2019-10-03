@@ -13,8 +13,6 @@ import { Login } from "./components/Login";
 import { MerchantList } from "./components/MerchantList";
 import { TransactionList } from "./components/TransactionList";
 
-import { reducer, initialState } from "./state/state";
-
 const useStyles = makeStyles((myTheme: Theme) => ({
   root: {
     display: "grid",
@@ -38,7 +36,6 @@ const useStyles = makeStyles((myTheme: Theme) => ({
 
 const App: React.FC = () => {
   const classes = useStyles();
-  const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
     <ApolloProvider client={gqlClient}>
