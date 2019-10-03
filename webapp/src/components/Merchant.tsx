@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import { User } from "../types/user.type";
+import { User } from "../types.d";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {

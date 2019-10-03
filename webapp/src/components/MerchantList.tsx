@@ -17,7 +17,7 @@ import { Save, Delete, Edit } from "@material-ui/icons";
 import { ALL_USERS_QUERY } from "../gql/queries";
 import { makeStyles } from "@material-ui/styles";
 import { useQuery } from "@apollo/react-hooks";
-import { User } from "../types/user.type";
+import { User } from "../types.d";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
