@@ -74,11 +74,25 @@ const merchantUsers = async (parent, _args, { db }) => {
   return await db("merchantUsers");
 };
 
+const transactions = async (parent, _args, { db }) => {
+  return await db("transactions").select(
+    "trx_guid as uuid",
+    "trx_rrn as rrn",
+    "trx_stan as stan",
+    "trx_datetime as datetime",
+    "trx_type as type",
+    "trx_amt as amt",
+    "trx_rsp_code as respCode",
+    "trx_auth_code as authCode"
+  );
+};
+
 export const resolvers = {
   Query: {
     me,
     merchants,
-    merchantUsers
+    merchantUsers,
+    transactions
   },
   Mutation: {
     login,

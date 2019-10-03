@@ -48,6 +48,17 @@ export const typeDefs = gql`
     active: Boolean
   }
 
+  type Transaction {
+    uuid: ID!
+    rrn: String!
+    stan: String!
+    datetime: String!
+    type: String!
+    amt: Int!
+    respCode: String
+    authCode: String
+  }
+
   type Authentication {
     token: String
     error: String
@@ -57,6 +68,7 @@ export const typeDefs = gql`
     me: MerchantUser
     merchants: [Merchant]!
     merchantUsers: [MerchantUser]!
+    transactions: [Transaction]!
     # users(first: Int, skip: Int, orderBy: String): [User]!
   }
 
