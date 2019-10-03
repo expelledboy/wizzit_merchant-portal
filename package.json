@@ -1,0 +1,20 @@
+{
+  "name": "merchant-portal",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "server",
+    "webapp"
+  ],
+  "scripts": {
+    "test": "yarn workspaces run test",
+    "lint": "yarn workspaces run lint",
+    "start:backend": "yarn workspace server run start",
+    "start:webapp": "yarn workspace webapp run start",
+    "start": "run-p start:*",
+    "setup": "yarn workspace server migrate && yarn workspace server seed"
+  },
+  "dependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
