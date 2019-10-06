@@ -1,13 +1,14 @@
 import gql from "graphql-tag";
 
 export const LIST_MERCHANT_USERS = gql`
-  query {
+  query merchantUsers {
     merchantUsers {
       id
       firstName
       lastName
       email
       active
+      editting @client
     }
   }
 `;
@@ -32,7 +33,6 @@ export const MERCHANT_USER = gql`
       lastName
       email
       merchant
-      editing @client
     }
   }
 `;

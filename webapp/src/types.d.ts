@@ -10,6 +10,8 @@ export interface IRegisterMerchantUser extends ICredentials {
 
 export interface IMerchantUser extends IRegisterMerchantUser {
   id: string;
+  active: boolean;
+  editting: boolean;
 }
 
 export interface IAuthentication {

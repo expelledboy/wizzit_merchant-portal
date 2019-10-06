@@ -41,6 +41,12 @@ const authLink = new ApolloLink((operation, forward) => {
 
 const watchedMutationLink = new WatchedMutationLink(cache, updates);
 
+cache.writeData({
+  data: {
+    edittingMerchantUser: null
+  }
+});
+
 const httpLink = new HttpLink({ uri: "/graphql" });
 
 const link = ApolloLink.from([
@@ -53,5 +59,5 @@ const link = ApolloLink.from([
 export const gqlClient = new ApolloClient({
   link,
   cache,
-  resolvers
+  resolvers: resolvers as any
 });

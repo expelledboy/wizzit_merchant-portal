@@ -24,16 +24,24 @@ export const typeDefs = gql`
     email: String!
     password: String!
     firstName: String!
-    lastName: String
+    lastName: String!
     merchantId: Int
     active: Boolean!
   }
 
-  input MerchantUserInput {
+  input RegisterMerchantUserInput {
     email: String!
     password: String!
     firstName: String!
     lastName: String!
+  }
+
+  input MerchantUserInput {
+    id: ID!
+    email: String!
+    firstName: String!
+    lastName: String!
+    active: Boolean!
   }
 
   type User {
@@ -74,7 +82,9 @@ export const typeDefs = gql`
 
   type Mutation {
     login(email: String!, password: String!): Authentication
-    signup(merchant: MerchantUserInput!): Authentication
+    signup(merchant: RegisterMerchantUserInput!): Authentication
+    saveMerchantUser(merchantUser: MerchantUserInput!): ID
+    deleteMerchantUser(id: ID!): Boolean
     # createMerchant(merchant: MerchantInput!): ID
     # createMerchantUser(merchantUser: MerchantUserInput!): ID
   }

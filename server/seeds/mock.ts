@@ -12,9 +12,10 @@ export async function seed(knex: Knex): Promise<any> {
   const hashedPassword = await bcrypt.hash("~password~", 10);
   await knex("merchantUsers").insert([
     {
-      email: "admin@wizzit-int.com",
+      email: "admin@wizzit.com",
       password: hashedPassword,
-      firstName: "Admin",
+      firstName: "God",
+      lastName: "Mode",
       role: "Admin",
       active: true
     }

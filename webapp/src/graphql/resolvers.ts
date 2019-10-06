@@ -1,18 +1,28 @@
-// import gql from "graphql-tag";
+import { IResolvers } from "graphql-tools";
+import gql from "graphql-tag";
 
-export const resolvers = {
+const merchantUserEditting = gql`
+  fragment edittingMerchant on MerchantUser {
+    editting
+  }
+`;
+
+export const resolvers: IResolvers = {
+  MerchantUser: {
+    editting: () => {
+      return false;
+    }
+  },
   Mutation: {
-    // merchantEditMode: (parent, variables, { cache, getCacheKey }) => {
-    //   const edittingMerchant = gql`
-    //     fragment edittingMerchant on Merchant {
-    //       editting
-    //     }
-    //   `;
-    //   const id = getCacheKey({ __typename: "merchant", id: variables.id });
-    //   const merchant = cache.readFragment({ fragment: edittingMerchant, id });
-    //   const data = { ...merchant, editting: !merchant.editting };
-    //   cache.writeData({ id, data });
-    //   return null;
-    // }
+    merchantEditMode: (parent, args, { cache, getCacheKey }) => {
+      const id = getCacheKey({ __typename: "MerchantUser", id: args.id });
+      const merchantUser = cache.readFragment({
+        fragment: merchantUserEditting,
+        id
+      });
+      const data = { ...merchantUser, editting: !merchantUser.editting };
+      cache.writeData({ id, data });
+      return null;
+    }
   }
 };

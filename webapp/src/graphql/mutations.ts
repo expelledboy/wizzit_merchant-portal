@@ -10,7 +10,7 @@ export const LOGIN = gql`
 `;
 
 export const SIGNUP = gql`
-  mutation signup($merchant: MerchantUserInput!) {
+  mutation signup($merchant: RegisterMerchantUserInput!) {
     signup(merchant: $merchant) {
       token
       error
@@ -18,8 +18,20 @@ export const SIGNUP = gql`
   }
 `;
 
-export const MERCHANT_EDIT_MODE = gql`
-  mutation merchantEditMode($id: Int!) {
+export const EDIT_MERCHANT_USER = gql`
+  mutation merchantEditMode($id: ID!) {
     merchantEditMode(id: $id) @client
+  }
+`;
+
+export const DELETE_MERCHANT_USER = gql`
+  mutation deleteMerchantUser($id: ID!) {
+    deleteMerchantUser(id: $id)
+  }
+`;
+
+export const SAVE_MERCHANT_USER = gql`
+  mutation saveMerchantUser($merchantUser: MerchantUserInput!) {
+    saveMerchantUser(merchantUser: $merchantUser)
   }
 `;

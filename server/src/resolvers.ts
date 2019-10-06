@@ -72,6 +72,19 @@ const merchantUsers = async (parent, _args, { db }) => {
   return await db("merchantUsers");
 };
 
+const saveMerchantUser = async (parent, { merchantUser }, { db }) => {
+  return await db("merchantUsers")
+    .where({ id: merchantUser.id })
+    .update(merchantUser);
+};
+
+const deleteMerchantUser = async (parent, { id }, { db }) => {
+  await db("merchantUsers")
+    .where({ id })
+    .del();
+  return true;
+};
+
 const transactions = async (parent, _args, { db }) => {
   return await db("transactions").select(
     "trx_guid as uuid",
@@ -94,6 +107,8 @@ export const resolvers = {
   },
   Mutation: {
     login,
-    signup
+    signup,
+    saveMerchantUser,
+    deleteMerchantUser
   }
 };
