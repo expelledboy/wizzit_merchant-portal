@@ -10,9 +10,12 @@
     "@types/jest": "24.0.15",
     "@types/node": "12.0.12",
     "@types/react": "16.8.23",
-    "@types/react-dom": "16.8.4",
-    "@types/react-router-dom": "^4.3.4",
-    "apollo-boost": "^0.4.3",
+    "apollo-cache-inmemory": "^1.6.3",
+    "apollo-client": "^2.6.4",
+    "apollo-link": "^1.2.13",
+    "apollo-link-error": "^1.1.12",
+    "apollo-link-http": "^1.5.16",
+    "apollo-link-watched-mutation": "^0.2.4",
     "classnames": "^2.2.6",
     "formik": "^2.0.1-rc.8",
     "graphql": "^14.4.2",
@@ -21,7 +24,7 @@
     "react": "^16.8.6",
     "react-apollo": "^3.0.0-beta.3",
     "react-dom": "^16.8.6",
-    "react-router-dom": "^5.0.1",
+    "react-router-dom": "^5.1.2",
     "react-scripts": "3.0.1",
     "tslint": "^5.18.0",
     "tslint-react": "^4.0.0",
@@ -31,6 +34,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "styleguide": "styleguidist server",
     "postbuild": "rm -rf ../server/webapp && cp -R ./build ../server/webapp"
   },
   "eslintConfig": {
@@ -47,5 +51,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-dom": "^16.9.1",
+    "@types/react-router": "^5.1.1",
+    "@types/react-router-dom": "^5.1.0",
+    "acorn": "6.3.0",
+    "react-docgen-typescript": "^1.15.0",
+    "react-styleguidist": "9.0.4"
   }
 }

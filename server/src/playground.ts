@@ -57,11 +57,11 @@ query {
 
 `;
 const tabs = [authenticate, me, signup, transactions].map(query => ({
-  endpoint: "/gql",
+  endpoint: "/graphql",
   query
 }));
 
 export const playground = {
-  endpoint: "/gql",
+  endpoint: "/graphql",
   tabs
 };

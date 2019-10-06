@@ -3,8 +3,6 @@ import bcrypt from "bcrypt";
 import { MerchantUser } from "./constants";
 import { createToken } from "./permissions";
 
-// const salt = "~salty~";
-
 const signup = async (parent, { merchant }, { db }) => {
   const password = await bcrypt.hash(merchant.password, 10);
   let user;

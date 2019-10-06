@@ -24,8 +24,8 @@ export const typeDefs = gql`
     email: String!
     password: String!
     firstName: String!
-    lastName: String!
-    merchantId: Int!
+    lastName: String
+    merchantId: Int
     active: Boolean!
   }
 

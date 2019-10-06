@@ -7,6 +7,7 @@ export async function seed(knex: Knex): Promise<any> {
   await knex("users").del();
   await knex("merchantUsers").del();
   await knex("merchants").del();
+  await knex("transactions").del();
 
   const hashedPassword = await bcrypt.hash("~password~", 10);
   await knex("merchantUsers").insert([
@@ -14,7 +15,8 @@ export async function seed(knex: Knex): Promise<any> {
       email: "admin@wizzit-int.com",
       password: hashedPassword,
       firstName: "Admin",
-      role: "Admin"
+      role: "Admin",
+      active: true
     }
   ]);
 

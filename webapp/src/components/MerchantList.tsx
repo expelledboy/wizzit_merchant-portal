@@ -9,15 +9,15 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  TextField
+  TextField,
+  Checkbox
 } from "@material-ui/core";
 
 import { Save, Delete, Edit } from "@material-ui/icons";
 
-import { ALL_USERS_QUERY } from "../gql/queries";
+import { LIST_MERCHANT_USERS } from "../graphql/queries";
 import { makeStyles } from "@material-ui/styles";
 import { useQuery } from "@apollo/react-hooks";
-import { User } from "../types.d";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const MerchantList = (props: any) => {
   const classes = useStyles();
-  const { loading, error, data, refetch } = useQuery(ALL_USERS_QUERY);
+  const { loading, error, data } = useQuery(LIST_MERCHANT_USERS);
 
   // TODO: add editing to local cache
 
@@ -78,6 +78,9 @@ export const MerchantList = (props: any) => {
       <TableCell>{item.firstName}</TableCell>
       <TableCell>{item.lastName}</TableCell>
       <TableCell>
+        <Checkbox disabled checked={item.active} color="primary" />
+      </TableCell>
+      <TableCell>
         <Button color="primary" onClick={() => props.change(index)}>
           <Edit />
         </Button>
@@ -97,11 +100,13 @@ export const MerchantList = (props: any) => {
             <TableCell>Email</TableCell>
             <TableCell>First Name</TableCell>
             <TableCell>Last Name</TableCell>
+            <TableCell>Active</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.users.map((item: any, index: number) => {
+          {data.merchantUsers.map((item: any, index: number) => {
+            console.log(item);
             if (item.editing) {
               return editMode(item, index);
             }

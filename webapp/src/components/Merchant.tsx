@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import { User } from "../types.d";
+import { IMerchantUser } from "../types.d";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -33,21 +33,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderTop: `1px solid ${theme.palette.primary.light}`,
     gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
     gridGap: 1,
-    background: `${theme.palette.primary.light}`,
-    "& > *": {
-      background: "white",
-      border: 0,
-      fontSize: "1rem",
-      padding: "1rem"
-    }
+    background: `${theme.palette.primary.light}`
   }
 }));
 
-type MerchantProps = {
-  user: User;
-};
+interface IMerchantProps {
+  user: IMerchantUser;
+}
 
-export const Merchant = ({ user }: MerchantProps) => {
+export const Merchant = ({ user }: IMerchantProps) => {
   const classes = useStyles();
 
   return (

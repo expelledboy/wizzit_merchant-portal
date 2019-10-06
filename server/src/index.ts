@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 // api
-app.use("/gql", api);
+app.use("/graphql", api);
 
 // app
 app.use(express.static(path.join(__dirname, "../webapp")));

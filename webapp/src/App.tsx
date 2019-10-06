@@ -1,17 +1,16 @@
-import React, { useReducer } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Router } from "react-router-dom";
+import { createBrowserHistory } from "history";
 import { ThemeProvider } from "@material-ui/styles";
 import { theme } from "./theme";
 import { makeStyles, Theme, CssBaseline, Grid } from "@material-ui/core";
 
 import { ApolloProvider } from "react-apollo";
-import { gqlClient } from "./gql/client";
+import { gqlClient } from "./graphql/client";
 
-import { BrowserRouter, Route } from "react-router-dom";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-import { Login } from "./components/Login";
-import { MerchantList } from "./components/MerchantList";
-import { TransactionList } from "./components/TransactionList";
+import { Pages, NavBar } from "./pages/index";
 
 const useStyles = makeStyles((myTheme: Theme) => ({
   root: {
@@ -28,24 +27,35 @@ const useStyles = makeStyles((myTheme: Theme) => ({
     gridColumn: "1/span 6",
     color: "#fff"
   },
+  nav: {
+    height: "100%"
+  },
   footer: {
     gridColumn: "1/span 6",
     color: "#fff"
   }
 }));
 
+const history = createBrowserHistory();
+
 const App: React.FC = () => {
   const classes = useStyles();
+
+  const [navBarOpen, setNavBarOpen] = useState<boolean>(false);
+  const openNavBar = useCallback(() => setNavBarOpen(true), []);
+  const closeNavBar = useCallback(() => setNavBarOpen(false), []);
+
+  useEffect(() => history.listen(closeNavBar));
 
   return (
     <ApolloProvider client={gqlClient}>
       <ThemeProvider theme={theme}>
-        <BrowserRouter>
+        <Router history={history}>
           <CssBaseline />
 
           <div className={classes.root}>
             <div className={classes.header}>
-              <Header />
+              <Header openNavBar={openNavBar} />
             </div>
 
             <div className={classes.container}>
@@ -57,18 +67,20 @@ const App: React.FC = () => {
                 direction="column"
               >
                 <Grid item>
-                  <Route path="/" exact component={Login} />
-                  <Route path="/merchants" component={MerchantList} />
-                  <Route path="/transactions" component={TransactionList} />
+                  <Pages />
                 </Grid>
               </Grid>
+            </div>
+
+            <div className={classes.nav}>
+              <NavBar open={navBarOpen} closeNavBar={closeNavBar} />
             </div>
 
             <div className={classes.footer}>
               <Footer />
             </div>
           </div>
-        </BrowserRouter>
+        </Router>
       </ThemeProvider>
     </ApolloProvider>
   );

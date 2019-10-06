@@ -1,160 +1,121 @@
 import React, { useState, FormEvent } from "react";
+import { ICredentials, IRegisterMerchantUser } from "../types.d";
 import {
-  Grid,
-  Paper,
-  Typography,
+  Card,
+  CardActions,
+  CardContent,
   Button,
-  Theme,
-  TextField,
-  Checkbox,
-  FormControlLabel,
-  Link,
-  FormHelperText
+  TextField
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import logo from "../logo.svg";
-import { useApolloClient, useMutation } from "react-apollo";
-import { LOGIN } from "../gql/mutations";
-import { History } from "history";
-import { LOCALSTORAGE_TOKEN } from "../constants";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    padding: theme.spacing(2),
-    minWidth: "350px"
-  },
-  button: {
-    marginTop: theme.spacing(2),
-    textTransform: "none"
-  },
-  textField: {
-    display: "block"
-  },
-  accessBtn: {
-    textTransform: "none",
-    color: "rgba(255,255,255,0.8)",
-    marginTop: theme.spacing(2)
-  }
-}));
+interface ILoginProps {
+  handleLogin: (creds: ICredentials) => void;
+  handleSignUp: (merchantUser: IRegisterMerchantUser) => void;
+}
 
-export function Login(props: { history: History }) {
-  const classes = useStyles();
-  const { history } = props;
+// TODO: replace with `formik`
 
-  // XXX: dont put this into state
-  const [email, setEmail] = useState<string>();
-  const [password, setPassword] = useState<string>();
-  const [error, setError] = useState<string>();
+const Login = (props: ILoginProps) => {
+  const { handleLogin, handleSignUp } = props;
 
-  const client = useApolloClient();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [signUp, setSignUp] = useState<boolean>(false);
 
-  const [login, { loading }] = useMutation<{
-    login: {
-      token: string;
-      error: string;
-    };
-  }>(LOGIN, {
-    onCompleted({ login: { token, error: authError } }) {
-      console.log({
-        token,
-        authError
-      });
-
-      if (authError) {
-        setError(authError);
-      }
-
-      if (token) {
-        localStorage.setItem(LOCALSTORAGE_TOKEN, token);
-        client.writeData({ data: { isLoggedIn: true } });
-        history.push("/transactions");
-      }
-    }
-  });
-
-  const handleLogin = async (e: FormEvent) => {
+  const onClickLogin = async (e: FormEvent) => {
     e.preventDefault();
-
-    await login({
-      variables: {
+    if (handleLogin) {
+      await handleLogin({
         email,
         password
-      }
-    });
+      });
+    }
+  };
+
+  const onClickSignUp = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!signUp) {
+      return setSignUp(true);
+    }
+    if (handleSignUp) {
+      await handleSignUp({
+        email,
+        password,
+        firstName,
+        lastName
+      });
+    }
   };
 
   return (
-    <Grid
-      container
-      justify="center"
-      spacing={6}
-      alignItems="center"
-      direction="column"
-    >
-      <Grid item>
-        <img src={logo} alt="wizzit_pay logo" />
-      </Grid>
-      <Grid item>
-        <Paper className={classes.root}>
-          <Typography
-            variant="h5"
-            align="center"
-            color="textSecondary"
-            component="h5"
+    <Card>
+      <CardContent>
+        <form>
+          {signUp && (
+            <React.Fragment>
+              <TextField
+                id="firstName"
+                onChange={e => setFirstName(e.target.value)}
+                label="First Name"
+                type="text"
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                id="lastName"
+                onChange={e => setLastName(e.target.value)}
+                label="Last Name"
+                type="text"
+                fullWidth
+                margin="normal"
+              />
+            </React.Fragment>
+          )}
+          <TextField
+            id="email"
+            onChange={e => setEmail(e.target.value)}
+            label="Email"
+            type="text"
+            autoComplete="current-email"
+            margin="normal"
+            fullWidth
+          />
+          <TextField
+            id="password"
+            onChange={e => setPassword(e.target.value)}
+            label="Password"
+            type="password"
+            fullWidth
+            autoComplete="current-password"
+            margin="normal"
+          />
+        </form>
+      </CardContent>
+      <CardActions>
+        {!signUp && (
+          <Button
+            variant="contained"
+            type="submit"
+            color="primary"
+            size="large"
+            onClick={onClickLogin}
           >
-            Welcome to Wizzit Pay
-          </Typography>
-          <form onSubmit={handleLogin}>
-            {error && <FormHelperText error>{error}</FormHelperText>}
-
-            <TextField
-              id="email"
-              label="Email"
-              className={classes.textField}
-              type="text"
-              autoComplete="current-email"
-              margin="normal"
-              fullWidth
-              onChange={e => setEmail(e.target.value)}
-            />
-            <TextField
-              id="password"
-              label="Password"
-              className={classes.textField}
-              type="password"
-              fullWidth
-              autoComplete="current-password"
-              margin="normal"
-              onChange={e => setPassword(e.target.value)}
-            />
-
-            <Grid spacing={6} container direction="row" alignItems="center">
-              <Grid item>
-                <FormControlLabel
-                  control={<Checkbox value="rememberMe" color="primary" />}
-                  label={<Typography variant="caption">Remember me</Typography>}
-                />
-              </Grid>
-              <Grid item>
-                <Link color="secondary" variant="caption">
-                  Forgot your password?
-                </Link>
-              </Grid>
-            </Grid>
-
-            <Button
-              type="submit"
-              className={classes.button}
-              fullWidth
-              color="secondary"
-              variant="contained"
-              size="large"
-            >
-              Login
-            </Button>
-          </form>
-        </Paper>
-      </Grid>
-    </Grid>
+            Login
+          </Button>
+        )}
+        <Button
+          variant="contained"
+          color={signUp ? "primary" : "secondary"}
+          size="large"
+          onClick={onClickSignUp}
+        >
+          Sign Up
+        </Button>
+      </CardActions>
+    </Card>
   );
-}
+};
+
+export default Login;

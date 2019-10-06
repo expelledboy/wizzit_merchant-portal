@@ -10,9 +10,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export function Footer() {
+export const Footer = () => {
   const classes = useStyles();
   return (
     <div className={classes.root}>&copy; Wizzit {new Date().getFullYear()}</div>
   );
-}
+};
