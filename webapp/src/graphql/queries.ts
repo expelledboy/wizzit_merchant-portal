@@ -12,6 +12,19 @@ export const CURRENT_USER = gql`
   }
 `;
 
+export const LIST_MERCHANTS = gql`
+  query merchants {
+    merchants {
+      merchantId
+      name
+      merchantCode
+      terminalId
+      address
+      active
+    }
+  }
+`;
+
 export const LIST_MERCHANT_USERS = gql`
   query merchantUsers {
     merchantUsers {

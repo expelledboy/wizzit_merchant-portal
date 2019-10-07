@@ -3,6 +3,15 @@ export interface ICredentials {
   password: string;
 }
 
+export interface IMerchant {
+  merchantId: string;
+  name: string;
+  merchantCode: string;
+  terminalId: string;
+  address: string;
+  active: boolean;
+}
+
 export interface IRegisterMerchantUser extends ICredentials {
   firstName: string;
   lastName: string;

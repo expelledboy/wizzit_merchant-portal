@@ -2,8 +2,8 @@ const authenticate = `
 
 mutation {
   login(
-    email: "admin@wizzit-int.com"
-    password: "~password~"
+    email: "admin@wizzit.com"
+    password: "12345"
   ) {
     token
     error
@@ -29,7 +29,7 @@ mutation {
   signup(
     merchant: {
       email: "admin@example.com"
-      password: "~password~"
+      password: "12345"
       firstName: "Betty"
       lastName: "Sue"
     }

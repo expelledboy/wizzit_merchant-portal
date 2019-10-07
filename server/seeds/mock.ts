@@ -10,7 +10,7 @@ export async function seed(knex: Knex): Promise<any> {
   await knex("merchants").del();
   await knex("transactions").del();
 
-  const hashedPassword = await bcrypt.hash("~password~", 10);
+  const hashedPassword = await bcrypt.hash("12345", 10);
   await knex("merchantUsers").insert([
     {
       email: "admin@wizzit.com",
@@ -21,6 +21,26 @@ export async function seed(knex: Knex): Promise<any> {
       active: true
     }
   ]);
+
+  const merchants = [...Array(10)].map(() => ({
+    merchant_id: casual.uuid,
+    name: casual.company_name,
+    merchant_code: casual.numerify("#####"),
+    terminal_id: casual.numerify("0##"),
+    address: casual.address,
+    active: casual.boolean
+  }));
+  await knex("merchants").insert(merchants);
+
+  const merchantUsers = [...Array(10)].map(() => ({
+    email: casual.email,
+    password: hashedPassword,
+    firstName: casual.first_name,
+    lastName: casual.last_name,
+    role: casual.random_element(["Admin", "MerchantUser"]),
+    active: casual.boolean
+  }));
+  await knex("merchant_users").insert(merchantUsers);
 
   const users = [...Array(10)].map(() => ({
     user_id: casual.uuid,

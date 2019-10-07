@@ -59,6 +59,7 @@ const login = async (parent, { email, password }, { db }) => {
 };
 
 const me = async (parent, _args, { db, userId }) => {
+  console.log("HERE");
   return await db("merchantUsers")
     .where({ id: userId })
     .first();
@@ -121,6 +122,6 @@ export const resolvers = {
     signup,
     saveMerchantUser,
     deleteMerchantUser,
-    setUserActive,
+    setUserActive
   }
 };
