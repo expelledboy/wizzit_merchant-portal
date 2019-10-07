@@ -47,6 +47,7 @@ export const typeDefs = gql`
   type User {
     userId: String
     msisdn: String
+    active: Boolean
   }
 
   type Card {
@@ -76,6 +77,7 @@ export const typeDefs = gql`
     me: MerchantUser
     merchants: [Merchant]!
     merchantUsers: [MerchantUser]!
+    users: [User]!
     transactions: [Transaction]!
     # users(first: Int, skip: Int, orderBy: String): [User]!
   }
@@ -85,6 +87,7 @@ export const typeDefs = gql`
     signup(merchant: RegisterMerchantUserInput!): Authentication
     saveMerchantUser(merchantUser: MerchantUserInput!): ID
     deleteMerchantUser(id: ID!): Boolean
+    setUserActive(userId: ID!, active: Boolean!): Boolean
     # createMerchant(merchant: MerchantInput!): ID
     # createMerchantUser(merchantUser: MerchantUserInput!): ID
   }

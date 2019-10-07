@@ -21,14 +21,16 @@ import {
 import { HomePage } from "./HomePage";
 import { LoginPage } from "./LoginPage";
 import { ListLink } from "../components/ListLink";
-import { MerchantList } from "../components/MerchantList";
+import { MerchantUserList } from "../components/MerchantUserList";
+import { UserList } from "../components/UserList";
 import { TransactionList } from "../components/TransactionList";
 
 export const Pages = () => (
   <Switch>
     <Route path="/" exact component={HomePage} />
     <Route path="/login" component={LoginPage} />
-    <Route path="/merchants" component={MerchantList} />
+    <Route path="/users" component={MerchantUserList} />
+    <Route path="/clients" component={UserList} />
     <Route path="/transactions" component={TransactionList} />
     {
       // <Route path="/courses" exact component={Courses} />
@@ -70,7 +72,7 @@ export const NavBar = ({ open, closeNavBar, ...props }: INavBar) => {
         <ListLink to="/" icon={Home} text="Home" />
         <ListLink to="/merchants" icon={Folder} text="Merchants" />
         <ListLink to="/users" icon={FolderShared} text="Users" />
-        <ListLink to="/client" icon={Person} text="Clients" />
+        <ListLink to="/clients" icon={Person} text="Clients" />
         <ListLink to="/transactions" icon={AttachMoney} text="Transactions" />
       </List>
     </Drawer>

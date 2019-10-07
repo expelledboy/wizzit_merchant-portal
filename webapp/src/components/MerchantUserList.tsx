@@ -1,5 +1,6 @@
 import React from "react";
 
+import { makeStyles } from "@material-ui/styles";
 import {
   Paper,
   Theme,
@@ -10,12 +11,11 @@ import {
   TableRow
 } from "@material-ui/core";
 
-import { LIST_MERCHANT_USERS } from "../graphql/queries";
-import { makeStyles } from "@material-ui/styles";
-import { useQuery } from "@apollo/react-hooks";
-
-import { IMerchantUser } from "../types.d";
 import { MerchantUserView, MerchantUserEdit } from "./MerchantUser";
+
+import { LIST_MERCHANT_USERS } from "../graphql/queries";
+import { useQuery } from "@apollo/react-hooks";
+import { IMerchantUser } from "../types.d";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export const MerchantList = (props: any) => {
+export const MerchantUserList = (props: any) => {
   const classes = useStyles();
   const { loading, error, data } = useQuery<{
     merchantUsers: IMerchantUser[];

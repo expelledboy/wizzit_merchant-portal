@@ -14,6 +14,29 @@ export interface IMerchantUser extends IRegisterMerchantUser {
   editting: boolean;
 }
 
+export interface IUser {
+  userId: string;
+  msisdn: string;
+  active: boolean;
+}
+
+export interface ITransaction {
+  userId: string;
+  msisdn: string;
+  active: boolean;
+}
+
+export interface ITransaction {
+  uuid: string;
+  rrn: string;
+  stan: string;
+  datetime: Date;
+  type: string;
+  amt: number;
+  respCode: string;
+  authCode: string;
+}
+
 export interface IAuthentication {
   token: string | null;
   error: string | null;
