@@ -12,7 +12,8 @@
     "start:backend": "yarn workspace server run start",
     "start:webapp": "yarn workspace webapp run start",
     "start": "run-p start:*",
-    "setup": "yarn workspace server migrate && yarn workspace server seed"
+    "setup": "yarn workspace server migrate && yarn workspace server seed",
+    "build:webapp": "yarn workspace webapp build"
   },
   "dependencies": {
     "npm-run-all": "^4.1.5"

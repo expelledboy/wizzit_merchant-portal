@@ -2,7 +2,7 @@ import knexStringcase from "knex-stringcase";
 
 export const development = knexStringcase({
   client: "pg",
-  connection: "postgres://wizzit_pay:wizzit_pay@docker:5432/wizzit_pay",
+  connection: process.env.DATABASE_URL || "postgres://wizzit_pay:wizzit_pay@docker:5432/wizzit_pay",
   migrations: {
     tableName: "knex_migrations"
   },

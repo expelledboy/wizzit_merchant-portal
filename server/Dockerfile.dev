@@ -1,0 +1,4 @@
+FROM alpine:3.9 AS base
+WORKDIR /opt/app
+RUN apk add --no-cache nodejs npm python bash
+CMD npm rebuild bcrypt --build-from-source && npm run start

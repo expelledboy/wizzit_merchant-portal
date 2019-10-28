@@ -24,8 +24,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "styleguide": "styleguidist server",
-    "postbuild": "rm -rf ../server/webapp && cp -R ./build ../server/webapp"
+    "styleguide": "styleguidist server"
   },
   "eslintConfig": {
     "extends": "react-app"

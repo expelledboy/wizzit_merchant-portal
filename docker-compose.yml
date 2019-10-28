@@ -1,12 +1,54 @@
-version: "3"
+version: "3.4"
 
 services:
+
   db:
     image: postgres
     restart: always
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: wizzit_pay
-      POSTGRES_USER: wizzit_pay
-      POSTGRES_DB: wizzit_pay
+      POSTGRES_PASSWORD: "wizzit_pay"
+      POSTGRES_USER: "wizzit_pay"
+      POSTGRES_DB: "wizzit_pay"
+
+  webapp:
+    build:
+      context: webapp
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: "development"
+      REACT_APP_BACKEND_URL: "http://server:3001/"
+    volumes:
+      - "${PWD}/node_modules:/opt/app/node_modules"
+      - "${PWD}/webapp:/opt/app"
+    ports:
+      - "3000:3000"
+
+  server:
+    build:
+      context: server
+      target: dev
+    volumes:
+      - "${PWD}/node_modules:/opt/app/node_modules"
+      - "${PWD}/server:/opt/app"
+    depends_on:
+      - "db"
+    environment:
+      NODE_ENV: "development"
+      DATABASE_URL: "postgres://wizzit_pay:wizzit_pay@db:5432/wizzit_pay"
+      PORT: "3001"
+
+  prod:
+    image: wizzit/merchant-portal
+    build:
+      context: server/
+    depends_on:
+      - "db"
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: "production"
+      PORT: "3000"
+      EXTERNAL_URL: "http://localhost:3000"
+

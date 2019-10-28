@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "start": "nodemon -r ts-node/register/transpile-only -r dotenv/config src/index.ts",
     "migrate": "knex migrate:latest --knexfile knexfile.ts",
     "migrate:make": "knex migrate:make --knexfile knexfile.ts",
@@ -31,6 +32,7 @@
     "ts-node": "^8.3.0"
   },
   "devDependencies": {
-    "casual": "^1.6.2"
+    "casual": "^1.6.2",
+    "typescript": "^3.6.4"
   }
 }

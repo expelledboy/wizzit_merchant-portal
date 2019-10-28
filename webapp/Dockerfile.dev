@@ -1,0 +1,6 @@
+FROM alpine:3.9 AS base
+WORKDIR /opt/app
+RUN apk add --no-cache nodejs npm
+COPY .deps ./
+RUN [ ! -s .deps ] || apk --no-cache add $(cat .deps)
+CMD npm run start
