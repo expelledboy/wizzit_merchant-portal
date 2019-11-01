@@ -1,5 +1,5 @@
 import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { InMemoryCache, IntrospectionFragmentMatcher } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
 import { ApolloLink } from "apollo-link";
 import { onError } from "apollo-link-error";
@@ -7,6 +7,11 @@ import { default as WatchedMutationLink } from "apollo-link-watched-mutation";
 import { LOCALSTORAGE_TOKEN } from "./../constants";
 import { updates } from "./updates";
 import { resolvers } from "./resolvers";
+import introspectionQueryResultData from "./fragmentTypes.json";
+
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData,
+});
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
@@ -23,7 +28,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({ fragmentMatcher });
 
 const authLink = new ApolloLink((operation, forward) => {
   const token = localStorage.getItem(LOCALSTORAGE_TOKEN);

@@ -1,4 +1,4 @@
-import { IMerchantUser, IUser } from "../types.d";
+import { IMerchantUser, IUser, IMerchant } from "../types.d";
 
 const upsert = (array: any[], test: (value: any) => boolean, obj: any) => {
   const valuePos = array.findIndex(test);
@@ -33,6 +33,27 @@ const deleteMerchantUser = ({ mutation, query }: any) => {
   };
 };
 
+const upsertMerchant = ({ mutation, query }: any) => {
+  const merchant = mutation.variables.merchant;
+  const merchants = upsert(
+    query.result.merchants,
+    item => item.merchantId === merchant.merchantId,
+    merchant
+  );
+  return {
+    merchants
+  };
+};
+
+const deleteMerchant = ({ mutation, query }: any) => {
+  const merchants = query.result.merchants.filter(
+    (item: IMerchant) => item.merchantId !== mutation.variables.merchantId
+  );
+  return {
+    merchants
+  };
+};
+
 const upsertUser = ({ mutation, query }: any) => {
   const userUpdate = mutation.variables;
   const users = upsert(
@@ -60,6 +81,12 @@ export const updates = {
   },
   deleteMerchantUser: {
     merchantUsers: deleteMerchantUser
+  },
+  saveMerchant: {
+    merchants: upsertMerchant
+  },
+  deleteMerchant: {
+    merchants: deleteMerchant
   },
   setUserActive: {
     users: upsertUser

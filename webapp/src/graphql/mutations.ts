@@ -36,6 +36,24 @@ export const SAVE_MERCHANT_USER = gql`
   }
 `;
 
+export const EDIT_MERCHANT = gql`
+  mutation merchantsEditMode($merchantId: ID!) {
+    merchantsEditMode(merchantId: $merchantId) @client
+  }
+`;
+
+export const DELETE_MERCHANT = gql`
+  mutation deleteMerchant($merchantId: ID!) {
+    deleteMerchant(merchantId: $merchantId)
+  }
+`;
+
+export const SAVE_MERCHANT = gql`
+  mutation saveMerchant($merchant: MerchantInput!) {
+    saveMerchant(merchant: $merchant)
+  }
+`;
+
 export const SET_USER_ACTIVE = gql`
   mutation setUserActive($userId: ID!, $active: Boolean!) {
     setUserActive(userId: $userId, active: $active)

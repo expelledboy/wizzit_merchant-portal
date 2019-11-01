@@ -10,6 +10,7 @@ export interface IMerchant {
   terminalId: string;
   address: string;
   active: boolean;
+  editting: boolean;
 }
 
 export interface IRegisterMerchantUser extends ICredentials {

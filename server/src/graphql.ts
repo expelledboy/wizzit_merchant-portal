@@ -3,14 +3,17 @@ import { ApolloServer, gql } from "apollo-server-express";
 import { makeExecutableSchema } from "graphql-tools";
 import { applyMiddleware } from "graphql-middleware";
 import { permissions, getTokenPayload } from "./permissions";
-import { typeDefs } from "./typeDefs";
 import { resolvers } from "./resolvers";
 import { playground } from "./playground";
 import { default as Knex } from "knex";
+import { readFileSync } from "fs";
+import * as path from "path";
 import * as knexfile from "../knexfile";
 
 const env = process.env.NODE_ENV || "development";
 const db = Knex(knexfile[env]);
+
+const typeDefs = readFileSync(path.join(__dirname, "schema.graphql"), "UTF-8");
 
 export const api = express();
 

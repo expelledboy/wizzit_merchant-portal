@@ -1,32 +1,25 @@
-import React from "react";
-
-import { makeStyles } from "@material-ui/styles";
-import { Edit } from "@material-ui/icons";
+import React, {useReducer} from "react";
+import { Save, Delete, Edit } from "@material-ui/icons";
 import {
-  Paper,
-  Theme,
   Button,
-  Table,
-  TableBody,
   TableCell,
-  TableHead,
   TableRow,
-  Checkbox
+  Checkbox, TextField
 } from "@material-ui/core";
-
-import { LIST_MERCHANTS } from "../graphql/queries";
-import { useQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import { IMerchant } from "../types.d";
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    textAlign: "center"
-  }
-}));
+import {
+  EDIT_MERCHANT,
+  DELETE_MERCHANT,
+  SAVE_MERCHANT,
+} from "../graphql/mutations";
 
 export const MerchantView: React.FC<{ merchant: IMerchant }> = ({
   merchant
 }) => {
+  const [editMerchant] = useMutation<void>(EDIT_MERCHANT);
+  const [deleteMerchant] = useMutation<void>(DELETE_MERCHANT);
+
   const {
     merchantId,
     name,
@@ -46,48 +39,83 @@ export const MerchantView: React.FC<{ merchant: IMerchant }> = ({
         <Checkbox disabled checked={active} color="primary" />
       </TableCell>
       <TableCell>
-        <Button color="primary">
+        <Button
+          color="primary"
+          onClick={() => editMerchant({ variables: { merchantId } })}
+        >
           <Edit />
+        </Button>
+        <Button
+          color="primary"
+          onClick={() => deleteMerchant({ variables: { merchantId } })}
+        >
+          <Delete />
         </Button>
       </TableCell>
     </TableRow>
   );
 };
 
-export const MerchantList = (props: any) => {
-  const classes = useStyles();
-  const { loading, error, data } = useQuery<{
-    merchants: IMerchant[];
-  }>(LIST_MERCHANTS);
+export const MerchantEdit: React.FC<{ merchant: IMerchant }> = ({
+merchant
+}) => {
+  const [data, dispatch] = useReducer((state: IMerchant, props: object) => {
+    return { ...state, ...props };
+  }, merchant);
+  const { merchantId, name, merchantCode, address, terminalId, active } = data;
 
-  if (loading) {
-    return <p>Loading ...</p>;
-  }
+  const [editMerchant] = useMutation<void>(EDIT_MERCHANT);
+  const [saveMerchant] = useMutation<void>(SAVE_MERCHANT);
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
-  }
+  const onSave = async () => {
+    await saveMerchant({
+      variables: {
+        merchant: {
+          merchantId,
+          name,
+          merchantCode,
+          address,
+          terminalId,
+          active
+        }
+      }
+    });
+    await editMerchant({ variables: { merchantId } });
+  };
 
   return (
-    <Paper className={classes.root}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Merchant Code</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Terminal ID</TableCell>
-            <TableCell>Address</TableCell>
-            <TableCell>Active</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data &&
-            data.merchants.map((merchant, idx) => (
-              <MerchantView key={idx} merchant={merchant} />
-            ))}
-        </TableBody>
-      </Table>
-    </Paper>
+    <TableRow key={merchantId}>
+      <TableCell>{merchantId}</TableCell>
+      <TableCell>
+        <TextField
+          value={name}
+          onChange={e => dispatch({ name: e.target.value })}
+        />
+      </TableCell>
+      <TableCell>
+        <TextField
+          value={merchantCode}
+          onChange={e => dispatch({ merchantCode: e.target.value })}
+        />
+      </TableCell>
+      <TableCell>
+        <TextField
+          value={address}
+          onChange={e => dispatch({ address: e.target.value })}
+        />
+      </TableCell>
+      <TableCell>
+        <Checkbox
+          checked={active}
+          onChange={(e, checked) => dispatch({ active: checked })}
+          color="primary"
+        />
+      </TableCell>
+      <TableCell>
+        <Button color="primary" onClick={onSave}>
+          <Save />
+        </Button>
+      </TableCell>
+    </TableRow>
   );
 };

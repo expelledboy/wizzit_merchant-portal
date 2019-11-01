@@ -15,13 +15,14 @@ import { Pages, NavBar } from "./pages/index";
 const useStyles = makeStyles((myTheme: Theme) => ({
   root: {
     display: "grid",
-    gridTemplateColumns: "repeat(6, 1fr)",
+    // gridTemplateColumns: "repeat(6, 1fr)",
     gridGap: "10px",
-    gridTemplateRows: "80px 1fr 80px",
+    // gridTemplateRows: "80px 1fr 80px",
     height: "100%"
   },
   container: {
-    gridColumn: "1/span 6"
+    gridColumn: "1/span 6",
+    height: "100%"
   },
   header: {
     gridColumn: "1/span 6",
@@ -32,7 +33,10 @@ const useStyles = makeStyles((myTheme: Theme) => ({
   },
   footer: {
     gridColumn: "1/span 6",
-    color: "#fff"
+    color: "#fff",
+    position: "fixed",
+    bottom: 0,
+    width: "100%"
   }
 }));
 
@@ -52,17 +56,13 @@ const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <Router history={history}>
           <CssBaseline />
-
           <div className={classes.root}>
             <div className={classes.header}>
               <Header openNavBar={openNavBar} />
             </div>
-
             <div className={classes.container}>
               <Grid
                 container
-                justify="center"
-                spacing={6}
                 alignItems="center"
                 direction="column"
               >
@@ -71,13 +71,11 @@ const App: React.FC = () => {
                 </Grid>
               </Grid>
             </div>
-
-            <div className={classes.nav}>
-              <NavBar open={navBarOpen} closeNavBar={closeNavBar} />
-            </div>
-
             <div className={classes.footer}>
               <Footer />
+            </div>
+            <div className={classes.nav}>
+              <NavBar open={navBarOpen} closeNavBar={closeNavBar} />
             </div>
           </div>
         </Router>

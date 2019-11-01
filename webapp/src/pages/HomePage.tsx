@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
+import { useHistory } from "react-router";
 import { CURRENT_USER } from "../graphql/queries";
 import { useQuery } from "@apollo/react-hooks";
 import { IMerchantUser } from "../types.d";
@@ -13,6 +14,7 @@ import {
   Button,
   Typography
 } from "@material-ui/core";
+import {LOCALSTORAGE_TOKEN} from "../constants";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -24,17 +26,22 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export function HomePage() {
+  const history = useHistory();
   const classes = useStyles();
-  const { loading, error, data } = useQuery<{ me: IMerchantUser }>(
-    CURRENT_USER
-  );
+  const token = localStorage.getItem(LOCALSTORAGE_TOKEN)
+  const { loading, error, data } = useQuery<{ me: IMerchantUser }>(CURRENT_USER);
+
+  if (token === null || token === undefined) {
+    history.push("/login");
+  }
 
   if (loading) {
     return <p>Loading ...</p>;
   }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
+  if (error || !data) {
+    history.push("/login");
+    // return <p>Error: {error.message}</p>;
   }
 
   return (

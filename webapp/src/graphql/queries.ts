@@ -21,6 +21,7 @@ export const LIST_MERCHANTS = gql`
       terminalId
       address
       active
+      editting @client
     }
   }
 `;
@@ -46,6 +47,18 @@ export const MERCHANT_USER = gql`
       lastName
       email
       merchant
+    }
+  }
+`;
+
+export const MERCHANT = gql`
+  query merchant($merchantId: ID!) {
+    user(where: { merchantId: $merchantId }) {
+      merchantId
+      name
+      merchantCode
+      terminalId
+      address
     }
   }
 `;

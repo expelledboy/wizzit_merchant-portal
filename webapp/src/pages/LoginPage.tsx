@@ -21,11 +21,6 @@ export function LoginPage() {
       setError(authError);
     }
 
-    console.log({
-      token,
-      authError
-    });
-
     if (token) {
       localStorage.setItem(LOCALSTORAGE_TOKEN, token);
       client.writeData({ data: { isLoggedIn: true } });

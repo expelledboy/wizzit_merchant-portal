@@ -69,6 +69,19 @@ const merchants = async (parent, _args, { db }) => {
   return await db("merchants");
 };
 
+const saveMerchant = async (parent, { merchants }, { db }) => {
+  return await db("merchants")
+    .where({ merchantId: merchants.merchantId })
+    .update(merchants);
+};
+
+const deleteMerchant = async (parent, { merchantId }, { db }) => {
+  await db("merchants")
+    .where({ merchantId })
+    .del();
+  return true;
+};
+
 const merchantUsers = async (parent, _args, { db }) => {
   return await db("merchantUsers");
 };
@@ -122,6 +135,8 @@ export const resolvers = {
     signup,
     saveMerchantUser,
     deleteMerchantUser,
+    saveMerchant,
+    deleteMerchant,
     setUserActive
   }
 };

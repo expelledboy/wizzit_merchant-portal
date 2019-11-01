@@ -1,0 +1,7 @@
+# codegen.yml
+schema: http://localhost:3001/graphql
+overwrite: true
+generates:
+  ./src/graphql/fragmentTypes.json:
+    plugins:
+      - fragment-matcher

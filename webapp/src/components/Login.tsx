@@ -5,8 +5,14 @@ import {
   CardActions,
   CardContent,
   Button,
-  TextField
+  TextField, makeStyles, Theme
 } from "@material-ui/core";
+
+const useStyles = makeStyles((theme: Theme) => ({
+  cardAction: {
+    justifyContent: "center"
+  }
+}));
 
 interface ILoginProps {
   handleLogin: (creds: ICredentials) => void;
@@ -17,12 +23,12 @@ interface ILoginProps {
 
 const Login = (props: ILoginProps) => {
   const { handleLogin, handleSignUp } = props;
-
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [signUp, setSignUp] = useState<boolean>(false);
+  const classes = useStyles();
 
   const onClickLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -93,7 +99,7 @@ const Login = (props: ILoginProps) => {
           />
         </form>
       </CardContent>
-      <CardActions>
+      <CardActions className={classes.cardAction}>
         {!signUp && (
           <Button
             variant="contained"

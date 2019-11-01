@@ -7,8 +7,19 @@ const merchantUserEditting = gql`
   }
 `;
 
+const merchantEditting = gql`
+  fragment edittingMerchant on Merchant {
+    editting
+  }
+`;
+
 export const resolvers: IResolvers = {
   MerchantUser: {
+    editting: () => {
+      return false;
+    }
+  },
+  Merchant: {
     editting: () => {
       return false;
     }
@@ -22,6 +33,16 @@ export const resolvers: IResolvers = {
       });
       const data = { ...merchantUser, editting: !merchantUser.editting };
       cache.writeData({ id, data });
+      return null;
+    },
+    merchantsEditMode: (parent, args, { cache, getCacheKey }) => {
+      const merchantId = getCacheKey({ __typename: "Merchant", merchantId: args.merchantId });
+      const merchant = cache.readFragment({
+        fragment: merchantEditting,
+        merchantId
+      });
+      const data = { ...merchant, editting: !merchant.editting };
+      cache.writeData({ merchantId, data });
       return null;
     }
   }
