@@ -1,5 +1,5 @@
 import React from "react";
-import {useHistory} from "react-router";
+import { useHistory } from "react-router";
 import { makeStyles } from "@material-ui/styles";
 import {
   Paper,
@@ -15,14 +15,14 @@ import { LIST_MERCHANTS } from "../graphql/queries";
 import { useQuery } from "@apollo/react-hooks";
 import { IMerchant } from "../types.d";
 import { MerchantView, MerchantEdit } from "../components/MerchantList";
-import {LOCALSTORAGE_TOKEN} from "../constants";
+import { LOCALSTORAGE_TOKEN } from "../constants";
 
 export const MerchantList = (props: any) => {
   const { loading, error, data } = useQuery<{
     merchants: IMerchant[];
   }>(LIST_MERCHANTS);
   const history = useHistory();
-  const token = localStorage.getItem(LOCALSTORAGE_TOKEN)
+  const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
 
   if (token === null || token === undefined) {
     history.push("/login");
@@ -50,13 +50,14 @@ export const MerchantList = (props: any) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data && data.merchants.map((merchant, idx) => {
-            return merchant.editting ? (
-              <MerchantEdit key={idx} merchant={merchant} />
-            ) : (
-              <MerchantView key={idx} merchant={merchant} />
-            );
-          })}
+          {data &&
+            data.merchants.map((merchant, idx) => {
+              return merchant.editting ? (
+                <MerchantEdit key={idx} merchant={merchant} />
+              ) : (
+                <MerchantView key={idx} merchant={merchant} />
+              );
+            })}
         </TableBody>
       </Table>
     </Paper>

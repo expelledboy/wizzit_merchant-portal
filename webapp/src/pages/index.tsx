@@ -26,18 +26,6 @@ import { MerchantUserList } from "./MerchantUserList";
 import { TransactionList } from "./TransactionList";
 import { ListLink } from "../components/ListLink";
 
-// import { ListLink } from "./ListLink";
-// import { MerchantUserList } from "./MerchantUserList";
-// import { MerchantList } from "./MerchantList";
-// import { UserList } from "./UserList";
-// import { TransactionList } from "./TransactionList";
-
-// import { ListLink } from "../components/ListLink";
-// import { MerchantUserList } from "../components/MerchantUserList";
-// import { MerchantList } from "../components/MerchantList";
-// import { UserList } from "../components/UserList";
-// import { TransactionList } from "../components/TransactionList";
-
 export const Pages = () => (
   <Switch>
     <Route path="/" exact component={HomePage} />

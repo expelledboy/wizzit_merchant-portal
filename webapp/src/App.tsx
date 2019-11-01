@@ -15,9 +15,7 @@ import { Pages, NavBar } from "./pages/index";
 const useStyles = makeStyles((myTheme: Theme) => ({
   root: {
     display: "grid",
-    // gridTemplateColumns: "repeat(6, 1fr)",
     gridGap: "10px",
-    // gridTemplateRows: "80px 1fr 80px",
     height: "100%"
   },
   container: {
@@ -61,11 +59,7 @@ const App: React.FC = () => {
               <Header openNavBar={openNavBar} />
             </div>
             <div className={classes.container}>
-              <Grid
-                container
-                alignItems="center"
-                direction="column"
-              >
+              <Grid container alignItems="center" direction="column">
                 <Grid item>
                   <Pages />
                 </Grid>

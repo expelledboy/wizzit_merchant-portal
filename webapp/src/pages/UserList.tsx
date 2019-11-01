@@ -7,14 +7,14 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
+  TableRow
 } from "@material-ui/core";
 import { useQuery } from "@apollo/react-hooks";
 import { LIST_USERS } from "../graphql/queries";
 import { IUser } from "../types.d";
-import {UserView} from "../components/UserList";
-import {useHistory} from "react-router";
-import {LOCALSTORAGE_TOKEN} from "../constants";
+import { UserView } from "../components/UserList";
+import { useHistory } from "react-router";
+import { LOCALSTORAGE_TOKEN } from "../constants";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -27,7 +27,7 @@ export const UserList = (props: any) => {
   const { loading, error, data } = useQuery<{
     users: IUser[];
   }>(LIST_USERS);
-  const token = localStorage.getItem(LOCALSTORAGE_TOKEN)
+  const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
   const history = useHistory();
   if (token === null || token === undefined) {
     history.push("/login");
@@ -54,7 +54,7 @@ export const UserList = (props: any) => {
         </TableHead>
         <TableBody>
           {data &&
-          data.users.map((user, idx) => <UserView key={idx} user={user} />)}
+            data.users.map((user, idx) => <UserView key={idx} user={user} />)}
         </TableBody>
       </Table>
     </Paper>
