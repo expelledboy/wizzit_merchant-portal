@@ -14,18 +14,15 @@ COPY yarn.lock ./
 COPY package.json ./
 RUN npm set progress=false && npm config set depth 0
 RUN yarn install --production
+COPY server/package.json ./
+RUN yarn install --production
 RUN mv node_modules node_modules.prod
 COPY . .
 RUN yarn install
 RUN yarn build
 
-FROM base AS dev
-RUN apk add --no-cache build-base bash python
-COPY .build-deps ./
-RUN [ ! -s .build-deps ] || apk --no-cache add $(cat .build-deps)
-CMD npm rebuild --update-binary && yarn start
-
 FROM base AS release
-COPY --from=build /opt/app/dist ./
+COPY --from=build /opt/app/server ./
 COPY --from=build /opt/app/node_modules.prod ./node_modules
+ENV PATH /opt/app/node_modules/.bin:$PATH
 CMD yarn start

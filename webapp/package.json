@@ -21,29 +21,6 @@
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.1.2"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "styleguide": "styleguidist server",
-    "codegen": "graphql-codegen --config codegen.yml",
-    "postbuild": "rm -rf ../server/webapp && cp -R ./build ../server/webapp"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.8.1",
     "@graphql-codegen/fragment-matcher": "^1.8.1",
@@ -61,5 +38,28 @@
     "tslint": "^5.18.0",
     "tslint-react": "^4.0.0",
     "typescript": "3.5.2"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "styleguide": "styleguidist server",
+    "codegen": "graphql-codegen --config codegen.yml",
+    "postbuild": "rm -rf ../server/webapp && cp -R ./build ../server/webapp"
   }
 }

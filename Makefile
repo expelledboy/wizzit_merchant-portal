@@ -1,33 +1,21 @@
-export APP := $(shell basename $(abspath $(dir $(lastword $(MAKEFILE_LIST)))))
+APP := $(shell basename $(abspath $(dir $(lastword $(MAKEFILE_LIST)))))
 ENV ?= staging
 REGISTERY = registry.$(ENV).wizzitdigital.com
-VERSION=$(shell cat package.json   | grep version   |  sed -e 's/.*"version": "\(.*\)",/\1/')
 
 default: build
 
 # ==>
-.PHONY: build dev cleanup
-
-build:
-	yarn build:webapp
-	cp yarn.lock ./server/yarn.lock
-	cp -R ./webapp/build ./server/webapp
-	docker-compose build prod
-	rm -rf ./server/yarn.lock
-	rm -rf ./server/webapp
+.PHONY: dev release push push-$(ENV)
 
 dev:
-	docker-compose up server webapp
+	docker-compose up -d db
+	yarn start
+	docker-compose down --v
 
-prod:
-	docker-compose up prod
+release:
+	docker-compose build release
 
-cleanup:
-	docker-compose down --volumes
-
-# ==>
-.PHONY: push push-$(ENV)
-
+push: VERSION=$(shell node -p "require('./package.json').version")
 push: push-$(ENV)
 
 push-$(ENV):
@@ -35,7 +23,23 @@ push-$(ENV):
 	docker tag $(APP):latest $(REGISTERY)/$(APP):$(VERSION)
 	docker push $(REGISTERY)/$(APP):$(VERSION)
 # ==>
-.PHONY: psql
+.PHONY: psql dump-db
 
 psql:
 	docker-compose exec db bash -c 'psql -U wizzit_pay -d wizzit_pay'
+
+dump-db:
+	rm server/migrations/production.sql
+	docker-compose exec db bash -c \
+	 'pg_dump -U wizzit_pay --data-only --table=merchant_users wizzit_pay' \
+	 >> server/migrations/production.sql
+
+# ==> Examples for production
+.PHONY: migrate restore-db
+
+migrate:
+	docker-compose exec portal yarn migrate
+
+restore-db: container = $(shell docker inspect -f '{{.Name}}' $$(docker-compose ps -q db) | cut -c2-)
+restore-db:
+	cat production.sql | docker exec -i $(container) psql -U wizzit_pay wizzit_pay

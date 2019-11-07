@@ -39,16 +39,8 @@ services:
       DATABASE_URL: "postgres://wizzit_pay:wizzit_pay@db:5432/wizzit_pay"
       PORT: "3001"
 
-  prod:
-    image: wizzit/merchant-portal
+  release:
+    image: merchant-portal
     build:
-      context: server/
-    depends_on:
-      - "db"
-    ports:
-      - "3000:3000"
-    environment:
-      NODE_ENV: "production"
-      PORT: "3000"
-      EXTERNAL_URL: "http://localhost:3000"
-
+      context: .
+      target: release
