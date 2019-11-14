@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import { LOCALSTORAGE_TOKEN } from "../constants";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
   card: {
     minWidth: 600
   },
@@ -29,6 +29,7 @@ export function HomePage() {
   const history = useHistory();
   const classes = useStyles();
   const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
+
   const { loading, error, data } = useQuery<{ me: IMerchantUser }>(
     CURRENT_USER
   );

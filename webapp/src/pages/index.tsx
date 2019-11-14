@@ -1,13 +1,6 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-
-import {
-  createStyles,
-  Theme,
-  makeStyles,
-  List,
-  Drawer
-} from "@material-ui/core";
+import { List } from "@material-ui/core";
 
 // https://material.io/resources/icons/?style=baseline
 import {
@@ -47,36 +40,13 @@ export const Pages = () => (
   </Switch>
 );
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {}
-  })
+// XXX: Dont break this out, as its coupled to Pages anyway.
+export const Links = () => (
+  <List component="nav">
+    <ListLink to="/" icon={Home} text="Home" />
+    <ListLink to="/merchants" icon={Folder} text="Merchants" />
+    <ListLink to="/users" icon={FolderShared} text="Users" />
+    <ListLink to="/clients" icon={Person} text="Clients" />
+    <ListLink to="/transactions" icon={AttachMoney} text="Transactions" />
+  </List>
 );
-
-export interface INavBar {
-  /** Nav bar open state */
-  open: boolean;
-  /** Close nav callback */
-  closeNavBar: () => void;
-}
-
-export const NavBar = ({ open, closeNavBar, ...props }: INavBar) => {
-  const classes = useStyles();
-
-  return (
-    <Drawer
-      open={open}
-      ModalProps={{
-        onBackdropClick: closeNavBar
-      }}
-    >
-      <List className={classes.root} component="nav">
-        <ListLink to="/" icon={Home} text="Home" />
-        <ListLink to="/merchants" icon={Folder} text="Merchants" />
-        <ListLink to="/users" icon={FolderShared} text="Users" />
-        <ListLink to="/clients" icon={Person} text="Clients" />
-        <ListLink to="/transactions" icon={AttachMoney} text="Transactions" />
-      </List>
-    </Drawer>
-  );
-};

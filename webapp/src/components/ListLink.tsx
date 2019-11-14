@@ -41,18 +41,18 @@ export const ListLink: FC<IListLink> = ({ to, icon: Icon, text }) => {
   const classes = useStyles();
 
   return (
-    <ListItem button>
-      <ListItemIcon>
-        <Icon />
-      </ListItemIcon>
-      <NavLink
-        exact
-        to={to}
-        className={classes.button}
-        activeClassName={classes.active}
-      >
+    <NavLink
+      exact
+      to={to}
+      className={classes.button}
+      activeClassName={classes.active}
+    >
+      <ListItem button>
+        <ListItemIcon>
+          <Icon />
+        </ListItemIcon>
         <ListItemText primary={text} />
-      </NavLink>
-    </ListItem>
+      </ListItem>
+    </NavLink>
   );
 };

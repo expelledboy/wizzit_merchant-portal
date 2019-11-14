@@ -13,12 +13,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface IHeader {
-  /** Function used to open nav */
-  openNavBar: () => void;
-}
-
-export const Header = ({ openNavBar }: IHeader) => {
+export const Header = () => {
   const classes = useStyles();
   return (
     <Grid
@@ -28,9 +23,7 @@ export const Header = ({ openNavBar }: IHeader) => {
       alignItems="center"
     >
       <Grid item>
-        <div onClick={openNavBar}>
-          <ChevronLeft fontSize="large" className={classes.icon} />
-        </div>
+        <ChevronLeft fontSize="large" className={classes.icon} />
       </Grid>
       <Grid item>
         <Typography variant="caption">WIZZIT.PAY</Typography>

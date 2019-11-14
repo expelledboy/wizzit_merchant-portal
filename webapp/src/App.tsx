@@ -3,74 +3,111 @@ import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { ThemeProvider } from "@material-ui/styles";
 import { theme } from "./theme";
-import { makeStyles, Theme, CssBaseline, Grid } from "@material-ui/core";
+import Logo from "./logo.png";
+import {
+  makeStyles,
+  createStyles,
+  Theme,
+  CssBaseline,
+  Toolbar,
+  Typography,
+  AppBar,
+  Divider,
+  Drawer,
+  Button
+} from "@material-ui/core";
+// https://material.io/resources/icons/?style=baseline
+import { Lock, LockOpen, ContactSupport } from "@material-ui/icons";
 
 import { ApolloProvider } from "@apollo/react-hooks";
 import { gqlClient } from "./graphql/client";
 
-import { Header } from "./components/Header";
-import { Footer } from "./components/Footer";
-import { Pages, NavBar } from "./pages/index";
+import { Pages, Links } from "./pages/index";
 
-const useStyles = makeStyles((myTheme: Theme) => ({
-  root: {
-    display: "grid",
-    gridGap: "10px",
-    height: "100%"
-  },
-  container: {
-    gridColumn: "1/span 6",
-    height: "100%"
-  },
-  header: {
-    gridColumn: "1/span 6",
-    color: "#fff"
-  },
-  nav: {
-    height: "100%"
-  },
-  footer: {
-    gridColumn: "1/span 6",
-    color: "#fff",
-    position: "fixed",
-    bottom: 0,
-    width: "100%"
-  }
-}));
+const drawerWidth = 240;
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: "flex"
+    },
+    appBar: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth
+    },
+    pageTitle: {
+      flexGrow: 1
+    },
+    logo: {
+      objectFit: "cover",
+      padding: theme.spacing(2)
+    },
+    drawer: {
+      width: drawerWidth,
+      flexShrink: 0
+    },
+    drawerPaper: {
+      width: drawerWidth
+    },
+    toolbar: theme.mixins.toolbar,
+    content: {
+      flexGrow: 1,
+      padding: theme.spacing(3)
+    },
+    footer: {
+      position: "fixed",
+      padding: theme.spacing(4, 2),
+      color: "#fff",
+      bottom: 0,
+      width: "100%"
+    }
+  })
+);
 
 const history = createBrowserHistory();
 
 const App: React.FC = () => {
   const classes = useStyles();
 
-  const [navBarOpen, setNavBarOpen] = useState<boolean>(false);
-  const openNavBar = useCallback(() => setNavBarOpen(true), []);
-  const closeNavBar = useCallback(() => setNavBarOpen(false), []);
-
-  useEffect(() => history.listen(closeNavBar));
-
   return (
     <ApolloProvider client={gqlClient}>
       <ThemeProvider theme={theme}>
         <Router history={history}>
-          <CssBaseline />
           <div className={classes.root}>
-            <div className={classes.header}>
-              <Header openNavBar={openNavBar} />
-            </div>
-            <div className={classes.container}>
-              <Grid container alignItems="center" direction="column">
-                <Grid item>
-                  <Pages />
-                </Grid>
-              </Grid>
-            </div>
-            <div className={classes.footer}>
-              <Footer />
-            </div>
-            <div className={classes.nav}>
-              <NavBar open={navBarOpen} closeNavBar={closeNavBar} />
-            </div>
+            <CssBaseline />
+            <AppBar position="fixed" className={classes.appBar}>
+              <Toolbar>
+                {/* TODO: https://material-ui.com/components/breadcrumbs/#integration-with-react-router */}
+                <Typography variant="h6" className={classes.pageTitle} noWrap>
+                  Merchant Portal
+                </Typography>
+                <Button color="inherit">
+                  <ContactSupport /> Contact Us
+                </Button>
+                <Button color="inherit">
+                  <Lock /> Login
+                </Button>
+              </Toolbar>
+            </AppBar>
+            <Drawer
+              className={classes.drawer}
+              variant="permanent"
+              classes={{
+                paper: classes.drawerPaper
+              }}
+              anchor="left"
+            >
+              <img src={Logo} className={classes.logo} />
+              <Divider />
+              <Links />
+            </Drawer>
+            <main className={classes.content}>
+              <div className={classes.toolbar} />
+              <Pages />
+              <div className={classes.footer}>
+                &copy; Wizzit {new Date().getFullYear()}
+              </div>
+            </main>
           </div>
         </Router>
       </ThemeProvider>
