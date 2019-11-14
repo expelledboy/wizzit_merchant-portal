@@ -14,7 +14,7 @@ import {
   Button,
   Typography
 } from "@material-ui/core";
-import {LOCALSTORAGE_TOKEN} from "../constants";
+import { LOCALSTORAGE_TOKEN } from "../constants";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -28,8 +28,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 export function HomePage() {
   const history = useHistory();
   const classes = useStyles();
-  const token = localStorage.getItem(LOCALSTORAGE_TOKEN)
-  const { loading, error, data } = useQuery<{ me: IMerchantUser }>(CURRENT_USER);
+  const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
+  const { loading, error, data } = useQuery<{ me: IMerchantUser }>(
+    CURRENT_USER
+  );
 
   if (token === null || token === undefined) {
     history.push("/login");

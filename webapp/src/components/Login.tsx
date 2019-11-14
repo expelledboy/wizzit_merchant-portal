@@ -1,68 +1,122 @@
 import React, { useState, FormEvent } from "react";
-import { ICredentials, IRegisterMerchantUser } from "../types.d";
+import { useApolloClient, useMutation } from "@apollo/react-hooks";
+import { IAuthentication } from "../types.d";
+import { LOGIN, SIGNUP } from "../graphql/mutations";
+import { LOCALSTORAGE_TOKEN } from "./../constants";
 import {
   Card,
   CardActions,
   CardContent,
+  Typography,
   Button,
-  TextField, makeStyles, Theme
+  TextField,
+  makeStyles,
+  Theme
 } from "@material-ui/core";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
   cardAction: {
     justifyContent: "center"
   }
 }));
 
-interface ILoginProps {
-  handleLogin: (creds: ICredentials) => void;
-  handleSignUp: (merchantUser: IRegisterMerchantUser) => void;
-}
-
 // TODO: replace with `formik`
 
-const Login = (props: ILoginProps) => {
-  const { handleLogin, handleSignUp } = props;
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [firstName, setFirstName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [signUp, setSignUp] = useState<boolean>(false);
+const Login = ({ onLogin, ...state }: any) => {
   const classes = useStyles();
+  const client = useApolloClient();
+
+  const [email, setEmail] = useState<string>(state.email || "");
+  const [password, setPassword] = useState<string>(state.password || "");
+  const [firstName, setFirstName] = useState<string>(state.firstName || "");
+  const [lastName, setLastName] = useState<string>(state.lastName || "");
+  const [expandSignUp, setExpandSignUp] = useState<boolean>(
+    state.expandSignUp !== undefined ? state.expandSignUp : false
+  );
+  const [error, setError] = useState<string>();
+
+  const onCompleted = ({ token, error: authError }: IAuthentication) => {
+    if (authError) {
+      setError(authError);
+    }
+
+    if (token) {
+      localStorage.setItem(LOCALSTORAGE_TOKEN, token);
+      client.writeData({ data: { isLoggedIn: true } });
+      onLogin();
+    }
+  };
+
+  const [login, { loading: loginLoading }] = useMutation<{
+    login: IAuthentication;
+  }>(LOGIN, {
+    onCompleted(resp) {
+      onCompleted(resp.login);
+    }
+  });
+
+  const [signUp, { loading: signUpLoading }] = useMutation<{
+    signup: IAuthentication;
+  }>(SIGNUP, {
+    onCompleted(resp) {
+      onCompleted(resp.signup);
+    }
+  });
 
   const onClickLogin = async (e: FormEvent) => {
     e.preventDefault();
-    if (handleLogin) {
-      await handleLogin({
+    setError("");
+    await login({
+      variables: {
         email,
         password
-      });
-    }
+      }
+    });
   };
 
   const onClickSignUp = async (e: FormEvent) => {
     e.preventDefault();
-    if (!signUp) {
-      return setSignUp(true);
+    setError("");
+    if (!expandSignUp) {
+      setExpandSignUp(true);
+      setError("");
+      return;
     }
-    if (handleSignUp) {
-      await handleSignUp({
-        email,
-        password,
-        firstName,
-        lastName
-      });
+    await signUp({
+      variables: {
+        merchant: {
+          email,
+          password,
+          firstName,
+          lastName
+        }
+      }
+    });
+  };
+
+  const onEnterPress = (e: React.KeyboardEvent<HTMLDivElement>): void => {
+    if (e.keyCode == 13 && e.shiftKey == false) {
+      if (expandSignUp) {
+        onClickSignUp(e);
+      } else {
+        onClickLogin(e);
+      }
     }
   };
+
+  if (loginLoading || signUpLoading) {
+    return <p>Loading ...</p>;
+  }
 
   return (
     <Card>
       <CardContent>
         <form>
-          {signUp && (
+          {expandSignUp && (
             <React.Fragment>
               <TextField
                 id="firstName"
+                defaultValue={firstName}
                 onChange={e => setFirstName(e.target.value)}
                 label="First Name"
                 type="text"
@@ -71,6 +125,7 @@ const Login = (props: ILoginProps) => {
               />
               <TextField
                 id="lastName"
+                defaultValue={lastName}
                 onChange={e => setLastName(e.target.value)}
                 label="Last Name"
                 type="text"
@@ -81,6 +136,7 @@ const Login = (props: ILoginProps) => {
           )}
           <TextField
             id="email"
+            defaultValue={email}
             onChange={e => setEmail(e.target.value)}
             label="Email"
             type="text"
@@ -90,6 +146,8 @@ const Login = (props: ILoginProps) => {
           />
           <TextField
             id="password"
+            defaultValue={password}
+            onKeyDown={onEnterPress}
             onChange={e => setPassword(e.target.value)}
             label="Password"
             type="password"
@@ -98,9 +156,14 @@ const Login = (props: ILoginProps) => {
             margin="normal"
           />
         </form>
+        {error && (
+          <Typography color="error" display="block" align="center">
+            {error}
+          </Typography>
+        )}
       </CardContent>
       <CardActions className={classes.cardAction}>
-        {!signUp && (
+        {!expandSignUp && (
           <Button
             variant="contained"
             type="submit"
@@ -113,7 +176,7 @@ const Login = (props: ILoginProps) => {
         )}
         <Button
           variant="contained"
-          color={signUp ? "primary" : "secondary"}
+          color={expandSignUp ? "primary" : "secondary"}
           size="large"
           onClick={onClickSignUp}
         >

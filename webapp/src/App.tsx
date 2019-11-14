@@ -5,7 +5,7 @@ import { ThemeProvider } from "@material-ui/styles";
 import { theme } from "./theme";
 import { makeStyles, Theme, CssBaseline, Grid } from "@material-ui/core";
 
-import { ApolloProvider } from "react-apollo";
+import { ApolloProvider } from "@apollo/react-hooks";
 import { gqlClient } from "./graphql/client";
 
 import { Header } from "./components/Header";

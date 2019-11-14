@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/react-hooks": "^3.1.3",
     "@material-ui/core": "^4.1.3",
     "@material-ui/icons": "^4.2.1",
     "@material-ui/styles": "^4.1.2",
@@ -17,24 +18,27 @@
     "http-proxy-middleware": "^0.19.1",
     "material-table": "^1.52.0",
     "react": "^16.8.6",
-    "react-apollo": "^3.0.0-beta.3",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
+    "@apollo/react-testing": "^3.1.3",
     "@graphql-codegen/cli": "^1.8.1",
     "@graphql-codegen/fragment-matcher": "^1.8.1",
+    "@storybook/addon-actions": "^5.2.6",
+    "@storybook/addon-knobs": "^5.2.6",
+    "@storybook/addon-links": "^5.2.6",
+    "@storybook/addon-notes": "^5.2.6",
+    "@storybook/addons": "^5.2.6",
+    "@storybook/react": "^5.2.6",
     "@types/classnames": "^2.2.9",
-    "@types/jest": "24.0.15",
+    "@types/jest": "^24.0.23",
     "@types/node": "12.0.12",
     "@types/react": "16.8.23",
     "@types/react-dom": "^16.9.1",
     "@types/react-router": "^5.1.1",
     "@types/react-router-dom": "^5.1.0",
-    "acorn": "6.3.0",
-    "react-docgen-typescript": "^1.15.0",
     "react-scripts": "3.0.1",
-    "react-styleguidist": "9.0.4",
     "tslint": "^5.18.0",
     "tslint-react": "^4.0.0",
     "typescript": "3.5.2"
@@ -58,8 +62,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "styleguide": "styleguidist server",
     "codegen": "graphql-codegen --config codegen.yml",
-    "postbuild": "rm -rf ../server/webapp && cp -R ./build ../server/webapp"
+    "postbuild": "rm -rf ../server/webapp && cp -R ./build ../server/webapp",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   }
 }
