@@ -1,8 +1,7 @@
 import React, { useState, FormEvent } from "react";
-import { useApolloClient, useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import { IAuthentication } from "../types.d";
 import { LOGIN, SIGNUP } from "../graphql/mutations";
-import { LOCALSTORAGE_TOKEN } from "./../constants";
 import {
   Card,
   CardActions,
@@ -24,7 +23,6 @@ const useStyles = makeStyles((_theme: Theme) => ({
 
 const Login = ({ onLogin, ...state }: any) => {
   const classes = useStyles();
-  const client = useApolloClient();
 
   const [email, setEmail] = useState<string>(state.email || "");
   const [password, setPassword] = useState<string>(state.password || "");
@@ -41,9 +39,7 @@ const Login = ({ onLogin, ...state }: any) => {
     }
 
     if (token) {
-      localStorage.setItem(LOCALSTORAGE_TOKEN, token);
-      client.writeData({ data: { isLoggedIn: true } });
-      onLogin();
+      onLogin(token);
     }
   };
 

@@ -10,7 +10,7 @@ default: build
 dev:
 	docker-compose up -d db
 	yarn start
-	docker-compose down --v
+	docker-compose down -v
 
 release:
 	docker-compose build release

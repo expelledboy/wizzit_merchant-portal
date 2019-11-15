@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { FormEvent } from "react";
 import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { ThemeProvider } from "@material-ui/styles";
-import { theme } from "./theme";
-import Logo from "./logo.png";
+import { useLocalStorage } from "@rehooks/local-storage";
+
 import {
   makeStyles,
   createStyles,
@@ -16,13 +16,16 @@ import {
   Drawer,
   Button
 } from "@material-ui/core";
+import { theme } from "./theme";
+import Logo from "./logo.png";
+import { Lock, ContactSupport, LockOpen } from "@material-ui/icons";
 // https://material.io/resources/icons/?style=baseline
-import { Lock, LockOpen, ContactSupport } from "@material-ui/icons";
 
 import { ApolloProvider } from "@apollo/react-hooks";
 import { gqlClient } from "./graphql/client";
 
 import { Pages, Links } from "./pages/index";
+import { LOCALSTORAGE_TOKEN } from "./constants";
 
 const drawerWidth = 240;
 
@@ -69,6 +72,19 @@ const history = createBrowserHistory();
 const App: React.FC = () => {
   const classes = useStyles();
 
+  const [token, _setToken, deleteToken] = useLocalStorage(LOCALSTORAGE_TOKEN);
+
+  const onClickLogin = async (e: FormEvent) => {
+    e.preventDefault();
+    history.push("/login");
+  };
+
+  const onClickLogout = async (e: FormEvent) => {
+    e.preventDefault();
+    deleteToken();
+    history.push("/login");
+  };
+
   return (
     <ApolloProvider client={gqlClient}>
       <ThemeProvider theme={theme}>
@@ -84,9 +100,15 @@ const App: React.FC = () => {
                 <Button color="inherit">
                   <ContactSupport /> Contact Us
                 </Button>
-                <Button color="inherit">
-                  <Lock /> Login
-                </Button>
+                {token ? (
+                  <Button color="inherit" onClick={onClickLogout}>
+                    <LockOpen /> Logout
+                  </Button>
+                ) : (
+                  <Button color="inherit" onClick={onClickLogin}>
+                    <Lock /> Login
+                  </Button>
+                )}
               </Toolbar>
             </AppBar>
             <Drawer
@@ -97,7 +119,7 @@ const App: React.FC = () => {
               }}
               anchor="left"
             >
-              <img src={Logo} className={classes.logo} />
+              <img src={Logo} alt="Wizzit Logo" className={classes.logo} />
               <Divider />
               <Links />
             </Drawer>
