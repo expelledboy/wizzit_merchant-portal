@@ -26,11 +26,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const MerchantUserList = (props: any) => {
   const classes = useStyles();
+  const history = useHistory();
+  const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
+
   const { loading, error, data } = useQuery<{
     merchantUsers: IMerchantUser[];
   }>(LIST_MERCHANT_USERS);
-  const history = useHistory();
-  const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
 
   if (token === null || token === undefined) {
     history.push("/login");

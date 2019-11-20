@@ -1,55 +1,39 @@
 import React from "react";
-import { LOGIN, SIGNUP } from "../graphql/mutations";
+import { IMocks } from "graphql-tools";
 import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
-import MockBuilder from "../@utils/mock";
+import { createApolloProvider } from "../@utils/apollo-decorator";
 import Login from "./Login";
 
-import { select } from "@storybook/addon-knobs";
+const auth = ({ email, password }) => {
+  if (email === "admin@example.com" && password === "admin")
+    return {
+      token: "0n9sn915n1925n",
+      error: null
+    };
 
-const notes = `
-  - Use empty credentials to get an error.
-  - Use admin/admin to login.
-  - Click signup to expand form to include input fields for registration.
-`;
+  return {
+    token: null,
+    error: "Failed to authenticate"
+  };
+};
 
-const mocks = new MockBuilder();
-
-mocks
-  .on(LOGIN, { email: "admin@example.com", password: "admin" })
-  .respond({ login: { token: "s0a129n" } });
-
-mocks
-  .on(LOGIN, { email: "bad@email.com", password: "break" })
-  .respond({ login: { error: "Failed to authenticate" } });
-
-mocks
-  .on(SIGNUP, {
-    merchant: {
-      email: "admin@example.com",
-      password: "admin",
-      firstName: "Admin",
-      lastName: "Admin"
+const mocks: IMocks = {
+  Mutation: () => ({
+    login(_root, credentials) {
+      return auth(credentials);
+    },
+    signup(_root, { merchant }) {
+      return auth(merchant);
     }
   })
-  .respond({ signup: { token: "s0a129n" } });
-
-const apolloMock = mocks.build();
+};
 
 storiesOf("Login", module)
-  .addDecorator(apolloMock)
-  .add(
-    "Invalid Creds",
-    () => {
-      const props = {
-        email: "bad@email.com",
-        password: "break"
-      };
-      return <Login {...props} />;
-    },
-    {
-      notes: "Username/Password combo not found"
-    }
+  .addDecorator(
+    createApolloProvider({
+      mocks
+    })
   )
   .add(
     "Login",
@@ -80,5 +64,20 @@ storiesOf("Login", module)
     },
     {
       notes: "Valid details needed for registartion"
+    }
+  )
+  .add(
+    "Invalid Details",
+    () => {
+      const props = {
+        email: "bad@email.com",
+        password: "break",
+        firstName: "Admin",
+        lastName: "Admin"
+      };
+      return <Login {...props} />;
+    },
+    {
+      notes: "Username/Password combo not found"
     }
   );

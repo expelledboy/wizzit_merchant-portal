@@ -24,7 +24,7 @@ export interface IMerchantUser extends IRegisterMerchantUser {
   editting: boolean;
 }
 
-export interface IUser {
+export interface IClient {
   userId: string;
   msisdn: string;
   active: boolean;

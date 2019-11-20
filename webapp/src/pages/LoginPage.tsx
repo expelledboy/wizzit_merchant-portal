@@ -7,7 +7,7 @@ import { LOCALSTORAGE_TOKEN } from "../constants";
 
 export function LoginPage() {
   const history = useHistory();
-  const [token, setToken] = useLocalStorage(LOCALSTORAGE_TOKEN);
+  const [_token, setToken] = useLocalStorage(LOCALSTORAGE_TOKEN);
 
   const onLogin = (token: string) => {
     setToken(token);
@@ -17,10 +17,6 @@ export function LoginPage() {
   const loginProps = {
     onLogin
   };
-
-  if (token) {
-    history.push("/");
-  }
 
   return (
     <Grid container spacing={1} direction="column">

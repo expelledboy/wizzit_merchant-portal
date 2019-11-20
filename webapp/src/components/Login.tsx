@@ -15,7 +15,7 @@ import {
 
 const useStyles = makeStyles((_theme: Theme) => ({
   cardAction: {
-    justifyContent: "center"
+    justifyContent: "right"
   }
 }));
 
@@ -91,7 +91,7 @@ const Login = ({ onLogin, ...state }: any) => {
   };
 
   const onEnterPress = (e: React.KeyboardEvent<HTMLDivElement>): void => {
-    if (e.keyCode == 13 && e.shiftKey == false) {
+    if (e.keyCode === 13 && e.shiftKey === false) {
       if (expandSignUp) {
         onClickSignUp(e);
       } else {
@@ -152,13 +152,13 @@ const Login = ({ onLogin, ...state }: any) => {
             margin="normal"
           />
         </form>
+      </CardContent>
+      <CardActions className={classes.cardAction}>
         {error && (
-          <Typography color="error" display="block" align="center">
+          <Typography color="error" align="center">
             {error}
           </Typography>
         )}
-      </CardContent>
-      <CardActions className={classes.cardAction}>
         {!expandSignUp && (
           <Button
             variant="contained"
@@ -169,6 +169,11 @@ const Login = ({ onLogin, ...state }: any) => {
           >
             Login
           </Button>
+        )}
+        {expandSignUp && !error && (
+          <Typography align="center">
+            By signing up you agree the terms and conditions.
+          </Typography>
         )}
         <Button
           variant="contained"

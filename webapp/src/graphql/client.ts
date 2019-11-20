@@ -1,5 +1,8 @@
 import { ApolloClient } from "apollo-client";
-import { InMemoryCache, IntrospectionFragmentMatcher } from "apollo-cache-inmemory";
+import {
+  InMemoryCache,
+  IntrospectionFragmentMatcher
+} from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
 import { ApolloLink } from "apollo-link";
 import { onError } from "apollo-link-error";
@@ -10,10 +13,10 @@ import { resolvers } from "./resolvers";
 import introspectionQueryResultData from "./fragmentTypes.json";
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
-  introspectionQueryResultData,
+  introspectionQueryResultData
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+export const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
       console.log(
@@ -28,9 +31,9 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const cache = new InMemoryCache({ fragmentMatcher });
+export const cache = new InMemoryCache({ fragmentMatcher });
 
-const authLink = new ApolloLink((operation, forward) => {
+export const authLink = new ApolloLink((operation, forward) => {
   const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
 
   if (token) {
@@ -44,7 +47,7 @@ const authLink = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-const watchedMutationLink = new WatchedMutationLink(cache, updates);
+export const watchedMutationLink = new WatchedMutationLink(cache, updates);
 
 cache.writeData({
   data: {
@@ -52,9 +55,9 @@ cache.writeData({
   }
 });
 
-const httpLink = new HttpLink({ uri: "/graphql" });
+export const httpLink = new HttpLink({ uri: "/graphql" });
 
-const link = ApolloLink.from([
+export const link = ApolloLink.from([
   authLink,
   errorLink,
   watchedMutationLink,
