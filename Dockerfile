@@ -16,7 +16,7 @@ RUN npm set progress=false && npm config set depth 0
 RUN yarn install --production
 COPY server/package.json ./
 RUN yarn install --production
-RUN mv node_modules node_modules.prod
+RUN cp -R node_modules node_modules.prod
 COPY . .
 RUN yarn install
 RUN yarn build

@@ -70,9 +70,14 @@ type Authentication {
   error: String
 }
 
+type MerchantPage {
+  total: Int!
+  items: [Merchant]!
+}
+
 type Query {
   me: MerchantUser
-  merchants: [Merchant]!
+  merchants(page: Int, pageSize: Int): MerchantPage!
   merchantUsers: [MerchantUser]!
   users: [User]!
   transactions: [Transaction]!
@@ -80,6 +85,7 @@ type Query {
 }
 
 type Mutation {
+  aken(merchantCode: String!, password: String!): Boolean!
   login(email: String!, password: String!): Authentication
   signup(merchant: RegisterMerchantUserInput!): Authentication
   saveMerchantUser(merchantUser: MerchantUserInput!): ID

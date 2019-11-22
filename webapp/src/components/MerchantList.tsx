@@ -1,18 +1,26 @@
-import React, {useReducer} from "react";
+import React, { useReducer } from "react";
 import { Save, Delete, Edit } from "@material-ui/icons";
 import {
   Button,
   TableCell,
   TableRow,
-  Checkbox, TextField
+  Checkbox,
+  TextField,
+  TableBody,
+  TableHead,
+  Paper,
+  Table
 } from "@material-ui/core";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import { IMerchant } from "../types.d";
 import {
   EDIT_MERCHANT,
   DELETE_MERCHANT,
-  SAVE_MERCHANT,
+  SAVE_MERCHANT
 } from "../graphql/mutations";
+import { LIST_MERCHANTS } from "../graphql/queries";
+import { LOCALSTORAGE_TOKEN } from "../constants";
+import { useHistory } from "react-router";
 
 export const MerchantView: React.FC<{ merchant: IMerchant }> = ({
   merchant
@@ -57,7 +65,7 @@ export const MerchantView: React.FC<{ merchant: IMerchant }> = ({
 };
 
 export const MerchantEdit: React.FC<{ merchant: IMerchant }> = ({
-merchant
+  merchant
 }) => {
   const [data, dispatch] = useReducer((state: IMerchant, props: object) => {
     return { ...state, ...props };
@@ -107,7 +115,7 @@ merchant
       <TableCell>
         <Checkbox
           checked={active}
-          onChange={(e, checked) => dispatch({ active: checked })}
+          onChange={(_e, checked) => dispatch({ active: checked })}
           color="primary"
         />
       </TableCell>
@@ -117,5 +125,52 @@ merchant
         </Button>
       </TableCell>
     </TableRow>
+  );
+};
+
+export const MerchantList = () => {
+  const { loading, error, data } = useQuery<{
+    merchants: IMerchant[];
+  }>(LIST_MERCHANTS);
+  const history = useHistory();
+  const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
+
+  if (token === null || token === undefined) {
+    history.push("/login");
+  }
+
+  if (loading) {
+    return <p>Loading ...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
+
+  return (
+    <Paper>
+      <Table size="small" aria-label="a dense table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Merchant Code</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Terminal ID</TableCell>
+            <TableCell>Address</TableCell>
+            <TableCell>Active</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data &&
+            data.merchants.map((merchant, idx) => {
+              return merchant.editting ? (
+                <MerchantEdit key={idx} merchant={merchant} />
+              ) : (
+                <MerchantView key={idx} merchant={merchant} />
+              );
+            })}
+        </TableBody>
+      </Table>
+    </Paper>
   );
 };

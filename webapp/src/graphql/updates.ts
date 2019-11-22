@@ -1,4 +1,4 @@
-import { IMerchantUser, IUser, IMerchant } from "../types.d";
+import { IMerchantUser, IClient, IMerchant } from "../types.d";
 
 const upsert = (array: any[], test: (value: any) => boolean, obj: any) => {
   const valuePos = array.findIndex(test);
@@ -68,7 +68,7 @@ const upsertUser = ({ mutation, query }: any) => {
 
 const deleteUser = ({ mutation, query }: any) => {
   const users = query.result.users.filter(
-    (item: IUser) => item.userId !== mutation.variables.userId
+    (item: IClient) => item.userId !== mutation.variables.userId
   );
   return {
     users

@@ -3,9 +3,8 @@ import bcrypt from "bcrypt";
 import { MerchantUser } from "./constants";
 import { createToken } from "./permissions";
 
-const signup = async (parent, { merchant }, { db }) => {
+const signup = async (_parent: any, { merchant }, { db }) => {
   const password = await bcrypt.hash(merchant.password, 10);
-  let user;
 
   try {
     const user = await db("merchantUsers").insert({
@@ -31,7 +30,7 @@ const signup = async (parent, { merchant }, { db }) => {
   }
 };
 
-const login = async (parent, { email, password }, { db }) => {
+const login = async (_parent: any, { email, password }, { db }) => {
   const user = await db("merchantUsers")
     .where({ email })
     .first();
@@ -58,58 +57,69 @@ const login = async (parent, { email, password }, { db }) => {
   };
 };
 
-const me = async (parent, _args, { db, userId }) => {
-  console.log("HERE");
+const me = async (_parent: any, _args, { db, userId }) => {
   return await db("merchantUsers")
     .where({ id: userId })
     .first();
 };
 
-const merchants = async (parent, _args, { db }) => {
+const aken = async (_parent: any, { merchantCode, password }, { db }) => {
+  const merchant = await db("merchants")
+    .where({ merchantCode })
+    .first();
+
+  console.log(merchant);
+
+  if (!!merchant && merchant.password === password) return true;
+
+  return false;
+};
+
+const merchants = async (_parent: any, _args, { db }) => {
   return await db("merchants");
 };
 
-const saveMerchant = async (parent, { merchants }, { db }) => {
+const saveMerchant = async (_parent: any, { merchants }, { db }) => {
   return await db("merchants")
     .where({ merchantId: merchants.merchantId })
     .update(merchants);
 };
 
-const deleteMerchant = async (parent, { merchantId }, { db }) => {
+const deleteMerchant = async (_parent: any, { merchantId }, { db }) => {
   await db("merchants")
     .where({ merchantId })
     .del();
   return true;
 };
 
-const merchantUsers = async (parent, _args, { db }) => {
+const merchantUsers = async (_parent: any, _args, { db }) => {
   return await db("merchantUsers");
 };
 
-const saveMerchantUser = async (parent, { merchantUser }, { db }) => {
+const saveMerchantUser = async (_parent: any, { merchantUser }, { db }) => {
   return await db("merchantUsers")
     .where({ id: merchantUser.id })
     .update(merchantUser);
 };
 
-const deleteMerchantUser = async (parent, { id }, { db }) => {
+const deleteMerchantUser = async (_parent: any, { id }, { db }) => {
   await db("merchantUsers")
     .where({ id })
     .del();
   return true;
 };
 
-const users = async (parent, _args, { db }) => {
+const users = async (_parent: any, _args, { db }) => {
   return await db("users");
 };
 
-const setUserActive = async (parent, { userId, active }, { db }) => {
+const setUserActive = async (_parent: any, { userId, active }, { db }) => {
   return await db("users")
     .where({ userId })
     .update({ active });
 };
 
-const transactions = async (parent, _args, { db }) => {
+const transactions = async (_parent: any, _args, { db }) => {
   return await db("transactions").select(
     "trx_guid as uuid",
     "trx_rrn as rrn",
@@ -132,6 +142,7 @@ export const resolvers = {
   },
   Mutation: {
     login,
+    aken,
     signup,
     saveMerchantUser,
     deleteMerchantUser,

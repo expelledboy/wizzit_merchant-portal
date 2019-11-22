@@ -1,6 +1,5 @@
 import React from "react";
 import casual from "casual-browserify";
-import { IMocks } from "graphql-tools";
 import { MockedProvider } from "@apollo/react-testing";
 import { MemoryRouter } from "react-router";
 import { storiesOf } from "@storybook/react";
@@ -13,7 +12,7 @@ const users = [...Array(10)].map(() => ({
   msisdn: casual.numerify("27#########")
 }));
 
-const mocks: IMocks = {
+const mocks = {
   Query: () => ({
     users() {
       return users;

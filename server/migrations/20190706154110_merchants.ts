@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<any> {
     table.increments();
 
     table.uuid("merchant_id").index();
-    table.uuid("password");
+    table.string("password");
 
     table.string("name");
     table.string("merchant_code");

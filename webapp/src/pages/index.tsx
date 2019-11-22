@@ -13,10 +13,10 @@ import {
 
 import { HomePage } from "./HomePage";
 import { LoginPage } from "./LoginPage";
-import { MerchantList } from "./MerchantList";
-import { UserList } from "./UserList";
-import { MerchantUserList } from "./MerchantUserList";
-import { TransactionList } from "./TransactionList";
+import { MerchantList } from "../components/MerchantList";
+import { ClientList } from "../components/ClientList";
+import { MerchantUserList } from "../components/MerchantUserList";
+import { TransactionList } from "../components/TransactionList";
 import { ListLink } from "../components/ListLink";
 
 export const Pages = () => (
@@ -25,7 +25,7 @@ export const Pages = () => (
     <Route path="/login" component={LoginPage} />
     <Route path="/merchants" component={MerchantList} />
     <Route path="/users" component={MerchantUserList} />
-    <Route path="/clients" component={UserList} />
+    <Route path="/clients" component={ClientList} />
     <Route path="/transactions" component={TransactionList} />
     {
       // <Route path="/courses" exact component={Courses} />

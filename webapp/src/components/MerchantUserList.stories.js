@@ -1,12 +1,11 @@
 import React from "react";
 import casual from "casual-browserify";
-import { IMocks } from "graphql-tools";
 import { storiesOf } from "@storybook/react";
 import { createApolloProvider } from "../@utils/apollo-decorator";
 import { MerchantUserList } from "./MerchantUserList";
 
 const merchantUsers = [...Array(10)].map(() => ({
-  id: casual.integer(),
+  id: casual.integer(1000, 2000),
   firstName: casual.first_name,
   lastName: casual.last_name,
   role: casual.random_element(["Admin", "MerchantUser"]),
@@ -15,7 +14,7 @@ const merchantUsers = [...Array(10)].map(() => ({
   editting: casual.boolean
 }));
 
-const mocks: IMocks = {
+const mocks = {
   Query: () => ({
     merchantUsers() {
       return merchantUsers;

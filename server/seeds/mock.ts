@@ -26,6 +26,7 @@ export async function seed(knex: Knex): Promise<any> {
     merchant_id: casual.uuid,
     name: casual.company_name,
     merchant_code: casual.numerify("#####"),
+    password: "12345",
     terminal_id: casual.numerify("0##"),
     address: casual.address,
     active: casual.boolean

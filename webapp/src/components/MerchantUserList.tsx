@@ -145,7 +145,7 @@ export const MerchantUserList = (_props: any) => {
 
   return (
     <Paper className={classes.root}>
-      <Table>
+      <Table size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
             <TableCell>ID</TableCell>

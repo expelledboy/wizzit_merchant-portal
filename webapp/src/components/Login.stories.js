@@ -1,5 +1,4 @@
 import React from "react";
-import { IMocks } from "graphql-tools";
 import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
 import { createApolloProvider } from "../@utils/apollo-decorator";
@@ -18,7 +17,7 @@ const auth = ({ email, password }) => {
   };
 };
 
-const mocks: IMocks = {
+const mocks = {
   Mutation: () => ({
     login(_root, credentials) {
       return auth(credentials);
