@@ -57,26 +57,37 @@ const login = async (_parent: any, { email, password }, { db }) => {
   };
 };
 
-const me = async (_parent: any, _args, { db, userId }) => {
+const me = async (_parent: any, _args: any, { db, userId }) => {
   return await db("merchantUsers")
     .where({ id: userId })
     .first();
 };
 
-const aken = async (_parent: any, { merchantCode, password }, { db }) => {
+const aken = async (_parent: any, { merchantId, password }, { db }) => {
   const merchant = await db("merchants")
-    .where({ merchantCode })
+    .where({ merchantId })
     .first();
 
-  console.log(merchant);
+  if (!!merchant && merchant.password === password) {
+    const { merchantCode, name } = merchant;
+    return {
+      authenticated: true,
+      merchantCode,
+      name
+    };
+  }
 
-  if (!!merchant && merchant.password === password) return true;
-
-  return false;
+  return {
+    authenticated: false
+  };
 };
 
-const merchants = async (_parent: any, _args, { db }) => {
-  return await db("merchants");
+const merchants = async (_parent: any, _args: any, { db }) => {
+  const merchants = await db("merchants");
+  return {
+    total: merchants.length,
+    items: merchants
+  };
 };
 
 const saveMerchant = async (_parent: any, { merchants }, { db }) => {
@@ -92,7 +103,7 @@ const deleteMerchant = async (_parent: any, { merchantId }, { db }) => {
   return true;
 };
 
-const merchantUsers = async (_parent: any, _args, { db }) => {
+const merchantUsers = async (_parent: any, _args: any, { db }) => {
   return await db("merchantUsers");
 };
 
@@ -109,7 +120,7 @@ const deleteMerchantUser = async (_parent: any, { id }, { db }) => {
   return true;
 };
 
-const users = async (_parent: any, _args, { db }) => {
+const users = async (_parent: any, _args: any, { db }) => {
   return await db("users");
 };
 
@@ -119,7 +130,7 @@ const setUserActive = async (_parent: any, { userId, active }, { db }) => {
     .update({ active });
 };
 
-const transactions = async (_parent: any, _args, { db }) => {
+const transactions = async (_parent: any, _args: any, { db }) => {
   return await db("transactions").select(
     "trx_guid as uuid",
     "trx_rrn as rrn",
