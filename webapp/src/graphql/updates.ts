@@ -1,4 +1,5 @@
-import { IMerchantUser, IClient, IMerchant } from "../types.d";
+import { IMerchant } from "../types.d";
+import casual from "casual-browserify";
 
 const upsert = (array: any[], test: (value: any) => boolean, obj: any) => {
   const valuePos = array.findIndex(test);
@@ -12,86 +13,101 @@ const upsert = (array: any[], test: (value: any) => boolean, obj: any) => {
   return array;
 };
 
-const upsertMerchantUser = ({ mutation, query }: any) => {
-  const merchantUser = mutation.variables.merchantUser;
-  const merchantUsers = upsert(
-    query.result.merchantUsers,
-    item => item.id === merchantUser.id,
-    merchantUser
-  );
-  return {
-    merchantUsers
-  };
-};
-
-const deleteMerchantUser = ({ mutation, query }: any) => {
-  const merchantUsers = query.result.merchantUsers.filter(
-    (item: IMerchantUser) => item.id !== mutation.variables.id
-  );
-  return {
-    merchantUsers
-  };
-};
-
 const upsertMerchant = ({ mutation, query }: any) => {
-  const merchant = mutation.variables.merchant;
+  if (!mutation.variables.merchant.__typename) {
+    Object.assign(mutation.variables.merchant, {
+      __typename: "Merchant",
+      id: casual.integer(100, 200),
+      merchantId: casual.uuid,
+      active: false,
+      ...mutation.variables.merchant
+    });
+  }
+
   const merchants = upsert(
-    query.result.merchants,
-    item => item.merchantId === merchant.merchantId,
-    merchant
+    query.result.merchants.items,
+    item => item.id === mutation.variables.id,
+    mutation.variables.merchant
   );
+
   return {
-    merchants
+    merchants: {
+      ...query.result.merchants,
+      total: merchants.length,
+      items: merchants
+    }
   };
 };
 
 const deleteMerchant = ({ mutation, query }: any) => {
-  const merchants = query.result.merchants.filter(
-    (item: IMerchant) => item.merchantId !== mutation.variables.merchantId
+  const merchants = query.result.merchants.items.filter(
+    (item: IMerchant) => item.id !== mutation.variables.id
   );
+
   return {
-    merchants
+    merchants: {
+      ...query.result.merchants,
+      total: merchants.length,
+      items: merchants
+    }
   };
 };
 
 const upsertUser = ({ mutation, query }: any) => {
-  const userUpdate = mutation.variables;
+  if (!mutation.variables.user.__typename) {
+    Object.assign(mutation.variables.user, {
+      __typename: "User",
+      id: casual.integer(100, 200),
+      active: false,
+      ...mutation.variables.user
+    });
+  }
+
   const users = upsert(
-    query.result.users,
-    item => item.userId === userUpdate.userId,
-    userUpdate
+    query.result.users.items,
+    item => item.id === mutation.variables.id,
+    mutation.variables.user
   );
+
   return {
-    users
+    users: {
+      ...query.result.users,
+      total: users.length,
+      items: users
+    }
   };
 };
 
-const deleteUser = ({ mutation, query }: any) => {
-  const users = query.result.users.filter(
-    (item: IClient) => item.userId !== mutation.variables.userId
+const upsertClient = ({ mutation, query }: any) => {
+  const clients = upsert(
+    query.result.clients.items,
+    item => item.clientId === mutation.variables.clientId,
+    mutation.variables.client
   );
+
   return {
-    users
+    clients: {
+      ...query.result.clients,
+      total: clients.length,
+      items: clients
+    }
   };
 };
 
 export const updates = {
-  saveMerchantUser: {
-    merchantUsers: upsertMerchantUser
+  createMerchant: {
+    merchants: upsertMerchant
   },
-  deleteMerchantUser: {
-    merchantUsers: deleteMerchantUser
-  },
-  saveMerchant: {
+  updateMerchant: {
     merchants: upsertMerchant
   },
   deleteMerchant: {
     merchants: deleteMerchant
   },
-  setUserActive: {
+  updateUser: {
     users: upsertUser
   },
-  deleteUser: {
-    users: deleteUser
+  updateClient: {
+    clients: upsertClient
   }
 };

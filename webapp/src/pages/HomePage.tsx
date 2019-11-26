@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
 import { CURRENT_USER } from "../graphql/queries";
 import { useQuery } from "@apollo/react-hooks";
-import { IMerchantUser } from "../types.d";
+import { IUser } from "../types.d";
 
 import {
   makeStyles,
@@ -30,9 +30,7 @@ export function HomePage() {
   const classes = useStyles();
   const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
 
-  const { loading, error, data } = useQuery<{ me: IMerchantUser }>(
-    CURRENT_USER
-  );
+  const { loading, error, data } = useQuery<{ me: IUser }>(CURRENT_USER);
 
   if (token === null || token === undefined) {
     history.push("/login");

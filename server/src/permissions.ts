@@ -1,5 +1,4 @@
 import { rule, shield, and, or, not } from "graphql-shield";
-import { Request } from "express";
 import * as jwt from "jsonwebtoken";
 import { Role, Admin, JWT_SECRET } from "./constants";
 
@@ -17,7 +16,7 @@ export function createToken(payload: object) {
 }
 
 export function getTokenPayload(authorization: any) {
-  let token;
+  let token: any;
   try {
     token = jwt.verify(authorization, JWT_SECRET) as Token;
   } catch (e) {
@@ -28,12 +27,12 @@ export function getTokenPayload(authorization: any) {
 
 // Rules
 
-const isAuthenticated = rule()(async (parent, args, ctx, info) => {
+const isAuthenticated = rule()(async (_parent, _args, ctx, _info) => {
   return !!ctx.userId;
 });
 
 const isRole = (role: Role) =>
-  rule()(async (parent, args, ctx, info) => {
+  rule()(async (_parent, _args, ctx, _info) => {
     return ctx.role && ctx.role === Symbol.keyFor(role);
   });
 
@@ -54,6 +53,7 @@ export const permissions = shield({
   Query: {
     me: isAuthenticated,
     merchants: and(isAuthenticated, isRole(Admin)),
-    merchantUsers: and(isAuthenticated, isRole(Admin))
+    users: and(isAuthenticated, isRole(Admin)),
+    clients: and(isAuthenticated, isRole(Admin))
   }
 });

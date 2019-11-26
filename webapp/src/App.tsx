@@ -52,11 +52,11 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerPaper: {
       width: drawerWidth
     },
-    toolbar: theme.mixins.toolbar,
     content: {
       flexGrow: 1,
       padding: theme.spacing(3)
     },
+    toolbar: theme.mixins.toolbar,
     footer: {
       position: "fixed",
       padding: theme.spacing(4, 2),
@@ -72,7 +72,9 @@ const history = createBrowserHistory();
 const App: React.FC = () => {
   const classes = useStyles();
 
-  const [token, _setToken, deleteToken] = useLocalStorage(LOCALSTORAGE_TOKEN);
+  const useToken = useLocalStorage(LOCALSTORAGE_TOKEN);
+  const token = useToken[0];
+  const deleteToken = useToken[2];
 
   const onClickLogin = async (e: FormEvent) => {
     e.preventDefault();

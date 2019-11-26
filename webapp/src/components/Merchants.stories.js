@@ -6,7 +6,8 @@ import { storiesOf } from "@storybook/react";
 import { createApolloProvider } from "../@utils/apollo-decorator";
 import { Merchants } from "./Merchants";
 
-const merchants = [...Array(25)].map(() => ({
+let merchants = [...Array(3)].map(() => ({
+  id: casual.integer(100, 200),
   merchantId: casual.uuid,
   name: casual.company_name,
   merchantCode: casual.numerify("#####"),
@@ -25,6 +26,28 @@ const mocks = {
         total: merchants.length,
         items: merchants.slice(start, end)
       };
+    }
+  }),
+  Mutation: () => ({
+    deleteMerchant(_root, { id }) {
+      merchants = merchants.filter(merchant => merchant.id !== parseInt(id));
+      return true;
+    },
+    createMerchant(_root, { id, merchant }) {
+      const idx = merchants.findIndex(item => item.id === parseInt(id));
+      if (idx >= 0) throw new Error("merchant already exists");
+      Object.assign(merchant, {
+        merchantId: casual.uuid,
+        active: false,
+        ...merchant
+      });
+      merchants.push(merchant);
+    },
+    updateMerchant(_root, { id, merchant }) {
+      const idx = merchants.findIndex(item => item.id === parseInt(id));
+      if (idx < 0) throw new Error("merchant not found");
+      Object.assign(merchants[idx], merchant);
+      return true;
     }
   })
 };

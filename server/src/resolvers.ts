@@ -1,13 +1,13 @@
-import express from "express";
 import bcrypt from "bcrypt";
 import { MerchantUser } from "./constants";
 import { createToken } from "./permissions";
+import uuid from "uuid/v4";
 
 const signup = async (_parent: any, { merchant }, { db }) => {
   const password = await bcrypt.hash(merchant.password, 10);
 
   try {
-    const user = await db("merchantUsers").insert({
+    const user = await db("users").insert({
       ...merchant,
       password,
       role: Symbol.keyFor(MerchantUser)
@@ -31,7 +31,7 @@ const signup = async (_parent: any, { merchant }, { db }) => {
 };
 
 const login = async (_parent: any, { email, password }, { db }) => {
-  const user = await db("merchantUsers")
+  const user = await db("users")
     .where({ email })
     .first();
 
@@ -58,7 +58,7 @@ const login = async (_parent: any, { email, password }, { db }) => {
 };
 
 const me = async (_parent: any, _args: any, { db, userId }) => {
-  return await db("merchantUsers")
+  return await db("users")
     .where({ id: userId })
     .first();
 };
@@ -90,75 +90,96 @@ const merchants = async (_parent: any, _args: any, { db }) => {
   };
 };
 
-const saveMerchant = async (_parent: any, { merchants }, { db }) => {
+const createMerchant = async (_parent: any, { merchant }, { db }) => {
+  Object.assign(merchant, {
+    merchantId: uuid(),
+    password: uuid()
+  });
+  return await db("merchants").insert(merchant);
+};
+
+const updateMerchant = async (_parent: any, { id, merchant }, { db }) => {
   return await db("merchants")
-    .where({ merchantId: merchants.merchantId })
-    .update(merchants);
+    .where({ id })
+    .update(merchant);
 };
 
-const deleteMerchant = async (_parent: any, { merchantId }, { db }) => {
+const deleteMerchant = async (_parent: any, { id }, { db }) => {
   await db("merchants")
-    .where({ merchantId })
-    .del();
-  return true;
-};
-
-const merchantUsers = async (_parent: any, _args: any, { db }) => {
-  return await db("merchantUsers");
-};
-
-const saveMerchantUser = async (_parent: any, { merchantUser }, { db }) => {
-  return await db("merchantUsers")
-    .where({ id: merchantUser.id })
-    .update(merchantUser);
-};
-
-const deleteMerchantUser = async (_parent: any, { id }, { db }) => {
-  await db("merchantUsers")
     .where({ id })
     .del();
   return true;
 };
 
 const users = async (_parent: any, _args: any, { db }) => {
-  return await db("users");
+  const users = await db("users");
+  return {
+    total: users.length,
+    items: users
+  };
 };
 
-const setUserActive = async (_parent: any, { userId, active }, { db }) => {
+const merchant = async (user: any, _args: any, { db }) => {
+  if (!user.merchantId) return null;
+  return await db("merchants")
+    .where({ id: user.merchantId })
+    .first();
+};
+
+const updateUser = async (_parent: any, { id, user }, { db }) => {
   return await db("users")
-    .where({ userId })
-    .update({ active });
+    .where({ id })
+    .update(user);
 };
 
-const transactions = async (_parent: any, _args: any, { db }) => {
-  return await db("transactions").select(
-    "trx_guid as uuid",
-    "trx_rrn as rrn",
-    "trx_stan as stan",
-    "trx_datetime as datetime",
-    "trx_type as type",
-    "trx_amt as amt",
-    "trx_rsp_code as respCode",
-    "trx_auth_code as authCode"
-  );
+const clients = async (_parent: any, _args: any, { db }) => {
+  const clients = await db("clients");
+  return {
+    total: clients.length,
+    items: clients
+  };
 };
+
+const updateClient = async (_parent: any, { clientId, client }, { db }) => {
+  return await db("clients")
+    .where({ clientId })
+    .update(client);
+};
+
+// const transactions = async (_parent: any, _args: any, { db }) => {
+//   return await db("transactions").select(
+//     "trx_guid as uuid",
+//     "trx_rrn as rrn",
+//     "trx_stan as stan",
+//     "trx_datetime as datetime",
+//     "trx_type as type",
+//     "trx_amt as amt",
+//     "trx_rsp_code as respCode",
+//     "trx_auth_code as authCode"
+//   );
+// };
 
 export const resolvers = {
+  User: {
+    merchant
+  },
   Query: {
     me,
     merchants,
-    merchantUsers,
     users,
-    transactions
+    clients
   },
   Mutation: {
     login,
     aken,
     signup,
-    saveMerchantUser,
-    deleteMerchantUser,
-    saveMerchant,
+
+    createMerchant,
+    updateMerchant,
     deleteMerchant,
-    setUserActive
+
+    updateUser,
+
+    updateClient
   }
 };

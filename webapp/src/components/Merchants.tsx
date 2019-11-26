@@ -4,8 +4,6 @@ import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { IMerchant } from "../types";
 import { useEffect } from "react";
-import { tryStatement } from "@babel/types";
-import { tryFunctionOrLogError } from "apollo-utilities";
 
 // https://github.com/magento/pwa-studio/blob/c78b4eae315789fa2a9b08696fe115661d0087d5/packages/peregrine/lib/talons/SearchPage/useSearchPage.js
 // https://github.com/micetti/rickipedia/blob/master/src/queries/CharactersQuery.tsx
@@ -16,8 +14,9 @@ export const LIST_MERCHANTS = gql`
     merchants(page: $page, pageSize: $pageSize) {
       total
       items {
-        merchantId
+        id
         name
+        merchantId
         merchantCode
         terminalId
         address
@@ -28,14 +27,20 @@ export const LIST_MERCHANTS = gql`
 `;
 
 export const DELETE_MERCHANT = gql`
-  mutation deleteMerchant($merchantId: ID!) {
-    deleteMerchant(merchantId: $merchantId)
+  mutation deleteMerchant($id: ID!) {
+    deleteMerchant(id: $id)
   }
 `;
 
-export const SAVE_MERCHANT = gql`
-  mutation saveMerchant($merchant: MerchantInput!) {
-    saveMerchant(merchant: $merchant)
+export const CREATE_MERCHANT = gql`
+  mutation createMerchant($merchant: CreateMerchantInput!) {
+    createMerchant(merchant: $merchant)
+  }
+`;
+
+export const UPDATE_MERCHANT = gql`
+  mutation updateMerchant($id: ID!, $merchant: UpdateMerchantInput!) {
+    updateMerchant(id: $id, merchant: $merchant)
   }
 `;
 
@@ -52,8 +57,8 @@ export function Merchants() {
 
   const columns: Array<Column<IMerchant>> = [
     { title: "Name", field: "name" },
-    { title: "Merchant Code", field: "merchantCode" },
-    { title: "Terminal Id", field: "terminalId" },
+    { title: "Merchant Code", field: "merchantCode", editable: "onAdd" },
+    { title: "Terminal Id", field: "terminalId", editable: "onAdd" },
     { title: "Address", field: "address" },
     { title: "Active", field: "active", type: "boolean" }
   ];
@@ -78,27 +83,47 @@ export function Merchants() {
 
   useEffect(() => {
     merchants.refetch();
-  }, [pagination]);
+  }, [merchants, pagination]);
 
-  const [deleteMerchant] = useMutation<void>(DELETE_MERCHANT);
-  const [saveMerchant] = useMutation<void>(SAVE_MERCHANT);
+  const refetchQueries = [{ query: LIST_MERCHANTS, variables: pagination }];
 
-  const onRowAdd = async (data: IMerchant) => {
+  const [deleteMerchant] = useMutation<void>(DELETE_MERCHANT, {
+    refetchQueries
+  });
+  const [saveMerchant] = useMutation<void>(CREATE_MERCHANT, {
+    refetchQueries
+  });
+  const [updateMerchant] = useMutation<void>(UPDATE_MERCHANT, {
+    refetchQueries
+  });
+
+  const onRowAdd = async (data: any) => {
+    const merchant = data;
+
     try {
-      await saveMerchant({ variables: { merchant: data } });
+      await saveMerchant({ variables: { merchant } });
     } catch (error) {
-      console.log(error);
+      console.log("onRowAdd", error);
     }
   };
 
-  const onRowUpdate = async (data: IMerchant, _prev: IMerchant | undefined) => {
-    await saveMerchant({ variables: { merchant: data } });
-    await merchants.refetch();
+  const onRowUpdate = async (data: any, _prev: any | undefined) => {
+    const { name, address, active } = data;
+    const merchant = { name, address, active };
+
+    try {
+      await updateMerchant({ variables: { id: data.id, merchant } });
+    } catch (error) {
+      console.log("onRowUpdate", error);
+    }
   };
 
   const onRowDelete = async (prev: IMerchant) => {
-    await deleteMerchant({ variables: { merchantId: prev.merchantId } });
-    await merchants.refetch();
+    try {
+      await deleteMerchant({ variables: { id: prev.id } });
+    } catch (error) {
+      console.log("onRowDelete", error);
+    }
   };
 
   const editable = {

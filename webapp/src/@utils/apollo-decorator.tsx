@@ -5,7 +5,8 @@ import { ApolloLink, Observable } from "apollo-link";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools";
 import { resolvers } from "../graphql/resolvers";
-import { cache, watchedMutationLink } from "../graphql/client";
+// import { cache, watchedMutationLink } from "../graphql/client";
+import { cache } from "../graphql/client";
 import { loader } from "graphql.macro";
 
 const typeDefs = loader("../../../server/src/schema.graphql");
@@ -18,8 +19,9 @@ function delay(ms: number) {
 
 function createLink(schema: any, rootValue = {}, context = {}) {
   return new ApolloLink(operation => {
-    return new Observable(observer => {
+    return new Observable<any>(observer => {
       const { query, operationName, variables } = operation;
+
       delay(300)
         .then(() => {
           return graphql(
@@ -32,6 +34,10 @@ function createLink(schema: any, rootValue = {}, context = {}) {
           );
         })
         .then(result => {
+          if (result.errors) {
+            return observer.error(result.errors[0]);
+          }
+
           observer.next(result);
           observer.complete();
         })
@@ -41,7 +47,11 @@ function createLink(schema: any, rootValue = {}, context = {}) {
 }
 
 export function createMockClient({ mocks }: any) {
-  const schema = makeExecutableSchema({ typeDefs });
+  const resolverValidationOptions = {
+    requireResolversForResolveType: false
+  };
+
+  const schema = makeExecutableSchema({ typeDefs, resolverValidationOptions });
 
   addMockFunctionsToSchema({
     schema,
@@ -52,7 +62,8 @@ export function createMockClient({ mocks }: any) {
   return new ApolloClient({
     cache,
     resolvers: resolvers as any,
-    link: ApolloLink.from([watchedMutationLink, createLink(schema)]),
+    // link: ApolloLink.from([watchedMutationLink, createLink(schema)]),
+    link: ApolloLink.from([createLink(schema)]),
     connectToDevTools: true
   });
 }

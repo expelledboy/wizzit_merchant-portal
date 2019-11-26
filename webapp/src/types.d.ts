@@ -4,8 +4,9 @@ export interface ICredentials {
 }
 
 export interface IMerchant {
-  merchantId: string;
+  id: string;
   name: string;
+  merchantId: string;
   merchantCode: string;
   terminalId: string;
   address: string;
@@ -13,25 +14,25 @@ export interface IMerchant {
   editting: boolean;
 }
 
-export interface IRegisterMerchantUser extends ICredentials {
+export interface ICreateUser extends ICredentials {
   firstName: string;
   lastName: string;
 }
 
-export interface IMerchantUser extends IRegisterMerchantUser {
+export interface IUser extends ICreateUser {
   id: string;
   active: boolean;
   editting: boolean;
 }
 
 export interface IClient {
-  userId: string;
+  clientId: string;
   msisdn: string;
   active: boolean;
 }
 
 export interface ITransaction {
-  userId: string;
+  clientId: string;
   msisdn: string;
   active: boolean;
 }
@@ -50,4 +51,9 @@ export interface ITransaction {
 export interface IAuthentication {
   token: string | null;
   error: string | null;
+}
+
+export interface IPagination {
+  page: number;
+  pageSize: number;
 }

@@ -7,7 +7,7 @@ import { LOCALSTORAGE_TOKEN } from "../constants";
 
 export function LoginPage() {
   const history = useHistory();
-  const [_token, setToken] = useLocalStorage(LOCALSTORAGE_TOKEN);
+  const setToken = useLocalStorage(LOCALSTORAGE_TOKEN)[1];
 
   const onLogin = (token: string) => {
     setToken(token);

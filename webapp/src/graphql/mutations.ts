@@ -48,12 +48,6 @@ export const DELETE_MERCHANT = gql`
   }
 `;
 
-export const SAVE_MERCHANT = gql`
-  mutation saveMerchant($merchant: MerchantInput!) {
-    saveMerchant(merchant: $merchant)
-  }
-`;
-
 export const SET_USER_ACTIVE = gql`
   mutation setUserActive($userId: ID!, $active: Boolean!) {
     setUserActive(userId: $userId, active: $active)

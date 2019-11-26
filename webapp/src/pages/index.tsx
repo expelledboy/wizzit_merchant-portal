@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { List } from "@material-ui/core";
+import jwtDecode from "jwt-decode";
 
 // https://material.io/resources/icons/?style=baseline
 import {
@@ -13,40 +14,47 @@ import {
 
 import { HomePage } from "./HomePage";
 import { LoginPage } from "./LoginPage";
-import { MerchantList } from "../components/MerchantList";
-import { ClientList } from "../components/ClientList";
-import { MerchantUserList } from "../components/MerchantUserList";
-import { TransactionList } from "../components/TransactionList";
+import { Merchants } from "../components/Merchants";
+import { Users } from "../components/Users";
+import { Clients } from "../components/Clients";
 import { ListLink } from "../components/ListLink";
+import { LOCALSTORAGE_TOKEN } from "../constants";
+import useLocalStorage from "@rehooks/local-storage";
 
 export const Pages = () => (
   <Switch>
     <Route path="/" exact component={HomePage} />
     <Route path="/login" component={LoginPage} />
-    <Route path="/merchants" component={MerchantList} />
-    <Route path="/users" component={MerchantUserList} />
-    <Route path="/clients" component={ClientList} />
-    <Route path="/transactions" component={TransactionList} />
-    {
-      // <Route path="/courses" exact component={Courses} />
-      // <Route path="/courses/:slug" component={Course} />
-      // <Route path="/course-categories/:slug" component={CourseCategory} />
-      // <Route path="/sign-up" exact component={SignUp} />
-      // <Route path="/log-in" exact component={LogIn} />
-      // <Route path="/log-out" exact component={LogOut} />
-      // <Route path="/set-password" exact component={SetPassword} />
-      // <Route path="/" component={Home} />
-    }
+    <Route path="/merchants" component={Merchants} />
+    <Route path="/users" component={Users} />
+    <Route path="/clients" component={Clients} />
   </Switch>
 );
 
 // XXX: Dont break this out, as its coupled to Pages anyway.
-export const Links = () => (
-  <List component="nav">
-    <ListLink to="/" icon={Home} text="Home" />
-    <ListLink to="/merchants" icon={Folder} text="Merchants" />
-    <ListLink to="/users" icon={FolderShared} text="Users" />
-    <ListLink to="/clients" icon={Person} text="Clients" />
-    <ListLink to="/transactions" icon={AttachMoney} text="Transactions" />
-  </List>
-);
+export const Links = () => {
+  const token = useLocalStorage(LOCALSTORAGE_TOKEN)[0];
+  const payload: any = token ? jwtDecode(token) : {};
+  const isLoggedIn = !!token;
+  const isAdmin = isLoggedIn && payload.role === "Admin";
+
+  console.log({ token, isAdmin, payload, isLoggedIn });
+
+  return (
+    <List component="nav">
+      <ListLink to="/" icon={Home} text="Home" />
+      {isAdmin && (
+        <>
+          <ListLink to="/merchants" icon={Folder} text="Merchants" />
+          <ListLink to="/users" icon={FolderShared} text="Users" />
+          <ListLink to="/clients" icon={Person} text="Clients" />
+        </>
+      )}
+      {isLoggedIn && (
+        <>
+          <ListLink to="/transactions" icon={AttachMoney} text="Transactions" />
+        </>
+      )}
+    </List>
+  );
+};

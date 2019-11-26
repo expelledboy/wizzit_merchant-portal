@@ -6,9 +6,9 @@ import {
 import { HttpLink } from "apollo-link-http";
 import { ApolloLink } from "apollo-link";
 import { onError } from "apollo-link-error";
-import { default as WatchedMutationLink } from "apollo-link-watched-mutation";
+// import { default as WatchedMutationLink } from "apollo-link-watched-mutation";
 import { LOCALSTORAGE_TOKEN } from "./../constants";
-import { updates } from "./updates";
+// import { updates } from "./updates";
 import { resolvers } from "./resolvers";
 import introspectionQueryResultData from "./fragmentTypes.json";
 
@@ -47,7 +47,8 @@ export const authLink = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-export const watchedMutationLink = new WatchedMutationLink(cache, updates);
+// TODO: Caching optimization later, considering pagination.
+// export const watchedMutationLink = new WatchedMutationLink(cache, updates);
 
 cache.writeData({
   data: {
@@ -60,7 +61,7 @@ export const httpLink = new HttpLink({ uri: "/graphql" });
 export const link = ApolloLink.from([
   authLink,
   errorLink,
-  watchedMutationLink,
+  // watchedMutationLink,
   httpLink
 ]);
 

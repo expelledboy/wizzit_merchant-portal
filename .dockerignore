@@ -7,3 +7,7 @@ dist
 *.pem
 server/webapp/
 zap/
+server/node_modules
+webapp/node_modules
+server/dist
+server/webapp
