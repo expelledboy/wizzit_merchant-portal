@@ -9,6 +9,7 @@ import { default as Knex } from "knex";
 import { readFileSync } from "fs";
 import * as path from "path";
 import * as knexfile from "../knexfile";
+import txEngine from "./clients/txEngine";
 
 const env = process.env.NODE_ENV || "development";
 const db = Knex(knexfile[env]);
@@ -27,10 +28,13 @@ const context = ({ req }: { req: Request }) => {
     console.warn("Authentication failed");
   }
 
+  console.log({ payload });
+
   return {
     ...req,
     ...payload,
-    db
+    db,
+    txEngine
   };
 };
 

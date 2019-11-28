@@ -7,10 +7,7 @@ export async function up(knex: Knex): Promise<any> {
     table.string("password");
     table.string("first_name");
     table.string("last_name");
-    table
-      .integer("merchant_id")
-      .unsigned()
-      .references("merchants.id");
+    table.uuid("merchant_id").references("merchants.merchant_id");
     table.enu("role", ["Admin", "MerchantUser"]).defaultTo("MerchantUser");
     table.boolean("active").defaultTo(false);
     table.unique(["email"]);

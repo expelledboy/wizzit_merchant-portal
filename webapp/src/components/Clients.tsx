@@ -68,7 +68,7 @@ export function Clients() {
     const client = { active };
 
     try {
-      await updateClient({ variables: { clientId: data.clientId, client } });
+      await updateClient({ variables: { id: data.clientId, client } });
     } catch (error) {
       console.log("onRowUpdate", error);
     }

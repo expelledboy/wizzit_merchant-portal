@@ -38,7 +38,7 @@ type User {
   password: String!
   firstName: String!
   lastName: String!
-  merchantId: Int
+  merchantId: String
   merchant: Merchant
   active: Boolean!
 }
@@ -60,7 +60,7 @@ input UpdateUserInput {
   firstName: String
   lastName: String
   active: Boolean
-  merchantId: Int
+  merchantId: String
 }
 
 # ==> Client
@@ -87,15 +87,23 @@ type Card {
   active: Boolean
 }
 
+# ==> Transaction
+
 type Transaction {
   uuid: ID!
-  rrn: String!
-  stan: String!
+  amount: Int!
+  # rrn: String!
+  # stan: String!
   datetime: String!
   type: String!
-  amt: Int!
+  # amt: Int!
   respCode: String
   authCode: String
+}
+
+type TransactionPage {
+  total: Int!
+  items: [Transaction]!
 }
 
 # ==> Misc
@@ -118,6 +126,7 @@ type Query {
   users(page: Int, pageSize: Int): UserPage!
   merchants(page: Int, pageSize: Int): MerchantPage!
   clients(page: Int, pageSize: Int): ClientPage!
+  transactions(page: Int, pageSize: Int): TransactionPage!
 }
 
 type Mutation {

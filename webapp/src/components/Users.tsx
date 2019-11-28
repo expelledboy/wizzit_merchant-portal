@@ -19,6 +19,7 @@ export const LIST_USERS = gql`
         merchantId
         merchant {
           id
+          merchantId
           name
         }
         active
@@ -32,7 +33,7 @@ export const LIST_MERCHANTS = gql`
     merchants(page: $page, pageSize: $pageSize) {
       total
       items {
-        id
+        merchantId
         name
       }
     }
@@ -70,20 +71,16 @@ function SelectMerchant({ rowData, onChange }: any) {
   }
 
   const handleChange = (event: any) => {
-    const merchantId = parseInt(event.target.value);
-    onChange(merchantId);
+    onChange(event.target.value);
   };
 
   return (
     <FormControl>
-      <Select
-        value={rowData.merchantId ? rowData.merchantId.toString() : ""}
-        onChange={handleChange}
-      >
+      <Select value={rowData.merchantId || ""} onChange={handleChange}>
         {merchants.data
           ? merchants.data.merchants.items.map(merchant => {
               return (
-                <MenuItem key={merchant.id} value={merchant.id}>
+                <MenuItem key={merchant.merchantId} value={merchant.merchantId}>
                   {merchant.name}
                 </MenuItem>
               );

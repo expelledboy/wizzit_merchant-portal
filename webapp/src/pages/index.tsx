@@ -17,6 +17,7 @@ import { LoginPage } from "./LoginPage";
 import { Merchants } from "../components/Merchants";
 import { Users } from "../components/Users";
 import { Clients } from "../components/Clients";
+import { Transactions } from "../components/Transactions";
 import { ListLink } from "../components/ListLink";
 import { LOCALSTORAGE_TOKEN } from "../constants";
 import useLocalStorage from "@rehooks/local-storage";
@@ -28,6 +29,7 @@ export const Pages = () => (
     <Route path="/merchants" component={Merchants} />
     <Route path="/users" component={Users} />
     <Route path="/clients" component={Clients} />
+    <Route path="/transactions" component={Transactions} />
   </Switch>
 );
 

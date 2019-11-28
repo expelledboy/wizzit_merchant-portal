@@ -7,6 +7,7 @@ import { Role, Admin, JWT_SECRET } from "./constants";
 export interface Token {
   userId: string;
   roles: string[];
+  merchant_id: string | undefined;
 }
 
 export function createToken(payload: object) {
