@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import MaterialTable, { Column } from "material-table";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { IMerchant } from "../types";
-import { useEffect } from "react";
 
 // https://github.com/magento/pwa-studio/blob/c78b4eae315789fa2a9b08696fe115661d0087d5/packages/peregrine/lib/talons/SearchPage/useSearchPage.js
 // https://github.com/micetti/rickipedia/blob/master/src/queries/CharactersQuery.tsx
 // https://github.com/SergeiMeza/airbnb-fullstack/blob/77f2f7e47cceb12e98db12b306b75b85c782b52e/packages/web/src/modules/users/UsersConnector.tsx
 
 export const LIST_MERCHANTS = gql`
-  query merchants($page: Int, $pageSize: Int) {
-    merchants(page: $page, pageSize: $pageSize) {
+  query merchants {
+    merchants {
       total
       items {
         id
@@ -44,17 +43,7 @@ export const UPDATE_MERCHANT = gql`
   }
 `;
 
-export interface Pagination {
-  page: number;
-  pageSize: number;
-}
-
 export function Merchants() {
-  const [pagination, setPagination] = useState<Pagination>({
-    page: 1,
-    pageSize: 10
-  });
-
   const columns: Array<Column<IMerchant>> = [
     { title: "Name", field: "name" },
     { title: "Merchant Code", field: "merchantCode", editable: "onAdd" },
@@ -69,23 +58,10 @@ export function Merchants() {
       items: IMerchant[];
     };
   }>(LIST_MERCHANTS, {
-    variables: pagination,
     displayName: "Merchants"
   });
 
-  const updatePage = (page: number) => {
-    setPagination((data: Pagination) => ({ page, ...data }));
-  };
-
-  const updatePageSize = (pageSize: number) => {
-    setPagination((data: Pagination) => ({ pageSize, ...data }));
-  };
-
-  useEffect(() => {
-    merchants.refetch();
-  }, [merchants, pagination]);
-
-  const refetchQueries = [{ query: LIST_MERCHANTS, variables: pagination }];
+  const refetchQueries = [{ query: LIST_MERCHANTS }];
 
   const [deleteMerchant] = useMutation<void>(DELETE_MERCHANT, {
     refetchQueries
@@ -139,13 +115,11 @@ export function Merchants() {
   const props = {
     title: "Merchants",
     data: merchants.data ? merchants.data.merchants.items : [],
-    // totalCount: merchants.data ? merchants.data.merchants.total : 0,
+    totalCount: merchants.data ? merchants.data.merchants.total : 0,
     isLoading: merchants.loading,
-    onChangePage: updatePage,
-    onChangeRowsPerPage: updatePageSize,
     columns,
     editable,
-    ...pagination
+    options: { exportButton: true }
   };
 
   return (

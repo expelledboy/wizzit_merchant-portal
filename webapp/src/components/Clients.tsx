@@ -9,6 +9,7 @@ export const LIST_CLIENTS = gql`
   query clients($page: Int, $pageSize: Int) {
     clients(page: $page, pageSize: $pageSize) {
       total
+      page
       items {
         clientId
         msisdn
@@ -38,6 +39,7 @@ export function Clients() {
   const clients = useQuery<{
     clients: {
       total: number;
+      page: number;
       items: IClient[];
     };
   }>(LIST_CLIENTS, {
@@ -53,10 +55,6 @@ export function Clients() {
     setPagination((data: IPagination) => ({ pageSize, ...data }));
   };
 
-  useEffect(() => {
-    clients.refetch();
-  }, [clients, pagination]);
-
   const refetchQueries = [{ query: LIST_CLIENTS, variables: pagination }];
 
   const [updateClient] = useMutation<void>(UPDATE_CLIENT, {
@@ -68,7 +66,7 @@ export function Clients() {
     const client = { active };
 
     try {
-      await updateClient({ variables: { id: data.clientId, client } });
+      await updateClient({ variables: { clientId: data.clientId, client } });
     } catch (error) {
       console.log("onRowUpdate", error);
     }
@@ -82,16 +80,39 @@ export function Clients() {
     return <p>{clients.error.message}</p>;
   }
 
+  const loadData = async () => {
+    await clients.refetch();
+
+    const { items, total, page } = !!clients.data
+      ? clients.data.clients
+      : {
+          items: [],
+          total: 0,
+          page: 0
+        };
+
+    console.log({ items, total, page, clients });
+
+    return {
+      data: items,
+      totalCount: total,
+      page
+    };
+  };
+
   const props = {
     title: "Clients",
-    data: clients.data ? clients.data.clients.items : [],
-    // totalCount: clients.data ? clients.data.clients.total : 0,
+    columns,
+    data: loadData,
     isLoading: clients.loading,
     onChangePage: updatePage,
     onChangeRowsPerPage: updatePageSize,
-    columns,
     editable,
-    ...pagination
+    options: {
+      // TODO: Until we implement paginated searches disable this for now.
+      search: false,
+      ...pagination
+    }
   };
 
   return (

@@ -133,11 +133,18 @@ const updateUser = async (_parent: any, { id, user }, { db }) => {
     .update(user);
 };
 
-const clients = async (_parent: any, _args: any, { db }) => {
-  const clients = await db("clients");
+const clients = async (_parent: any, { page, pageSize }, { db }) => {
+  const { data: clients, pagination } = await db("clients").paginate({
+    perPage: pageSize,
+    currentPage: page,
+    isLengthAware: true
+  });
+
+  console.log({ clients, pagination });
+
   return {
-    total: clients.length,
-    items: clients
+    items: clients,
+    ...pagination
   };
 };
 

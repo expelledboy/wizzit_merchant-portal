@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import MaterialTable, { Column } from "material-table";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { IUser, IMerchant } from "../types";
-import { useEffect } from "react";
 import { FormControl, Select, MenuItem } from "@material-ui/core";
 
 export const LIST_USERS = gql`
-  query users($page: Int, $pageSize: Int) {
-    users(page: $page, pageSize: $pageSize) {
+  query users {
+    users {
       total
       items {
         id
@@ -29,8 +28,8 @@ export const LIST_USERS = gql`
 `;
 
 export const LIST_MERCHANTS = gql`
-  query merchants($page: Int, $pageSize: Int) {
-    merchants(page: $page, pageSize: $pageSize) {
+  query merchants {
+    merchants {
       total
       items {
         merchantId
@@ -46,11 +45,6 @@ export const UPDATE_USER = gql`
   }
 `;
 
-export interface Pagination {
-  page: number;
-  pageSize: number;
-}
-
 function ViewMerchant(rowData: any) {
   return rowData.merchant ? <p>{rowData.merchant.name}</p> : <div>-</div>;
 }
@@ -62,7 +56,6 @@ function SelectMerchant({ rowData, onChange }: any) {
       items: IMerchant[];
     };
   }>(LIST_MERCHANTS, {
-    variables: { page: 1, pageSize: 100 },
     displayName: "UserSelectMerchant"
   });
 
@@ -92,11 +85,6 @@ function SelectMerchant({ rowData, onChange }: any) {
 }
 
 export function Users() {
-  const [pagination, setPagination] = useState<Pagination>({
-    page: 1,
-    pageSize: 10
-  });
-
   const columns: Array<Column<IUser>> = [
     { title: "Email", field: "email" },
     { title: "Name", field: "firstName" },
@@ -116,23 +104,10 @@ export function Users() {
       items: IUser[];
     };
   }>(LIST_USERS, {
-    variables: pagination,
     displayName: "Users"
   });
 
-  const updatePage = (page: number) => {
-    setPagination((data: Pagination) => ({ page, ...data }));
-  };
-
-  const updatePageSize = (pageSize: number) => {
-    setPagination((data: Pagination) => ({ pageSize, ...data }));
-  };
-
-  useEffect(() => {
-    users.refetch();
-  }, [users, pagination]);
-
-  const refetchQueries = [{ query: LIST_USERS, variables: pagination }];
+  const refetchQueries = [{ query: LIST_USERS }];
 
   const [updateUser] = useMutation<void>(UPDATE_USER, {
     refetchQueries
@@ -160,13 +135,10 @@ export function Users() {
   const props = {
     title: "Users",
     data: users.data ? users.data.users.items : [],
-    // totalCount: users.data ? users.data.users.total : 0,
+    totalCount: users.data ? users.data.users.total : 0,
     isLoading: users.loading,
-    onChangePage: updatePage,
-    onChangeRowsPerPage: updatePageSize,
     columns,
-    editable,
-    ...pagination
+    editable
   };
 
   return (

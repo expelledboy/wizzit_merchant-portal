@@ -1,5 +1,5 @@
 import express from "express";
-import { ApolloServer, gql } from "apollo-server-express";
+import { ApolloServer } from "apollo-server-express";
 import { makeExecutableSchema } from "graphql-tools";
 import { applyMiddleware } from "graphql-middleware";
 import { permissions, getTokenPayload } from "./permissions";
@@ -7,12 +7,16 @@ import { resolvers } from "./resolvers";
 import { playground } from "./playground";
 import { default as Knex } from "knex";
 import { readFileSync } from "fs";
+import { attachPaginate } from "knex-paginate";
 import * as path from "path";
 import * as knexfile from "../knexfile";
 import txEngine from "./clients/txEngine";
 
 const env = process.env.NODE_ENV || "development";
 const db = Knex(knexfile[env]);
+
+// Patch knex with pagination.
+attachPaginate();
 
 const typeDefs = readFileSync(path.join(__dirname, "schema.graphql"), "UTF-8");
 
@@ -38,7 +42,7 @@ const context = ({ req }: { req: Request }) => {
   };
 };
 
-const formatError = error => {
+const formatError = (error: any) => {
   console.error(JSON.stringify(error, null, 2));
   return error;
 };
