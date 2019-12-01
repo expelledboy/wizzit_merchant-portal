@@ -1,92 +1,85 @@
-import React, { useState } from "react";
-import MaterialTable, { Column } from "material-table";
-import gql from "graphql-tag";
-import { useQuery } from "@apollo/react-hooks";
+import React from "react";
 import { ITransaction } from "../types";
+// import useInfiniteScroll from "../hooks/useInfiniteScroll";
+import gql from "graphql-tag";
+import { useState } from "react";
+import { Button } from "@material-ui/core";
+import { useQuery } from "@apollo/react-hooks";
 import { useEffect } from "react";
 
-export const LIST_TRANSACTIONS = gql`
-  query transactions($page: Int, $pageSize: Int) {
-    transactions(page: $page, pageSize: $pageSize) {
-      total
+export const LOAD_MORE_TRANSACTIONS = gql`
+  query($cursor: ID, $limit: Int) {
+    transactions(cursor: $cursor, limit: $limit) {
+      cursor
+      haveMore
       items {
-        uuid
+        id
         amount
-        # rrn
-        # stan
-        datetime
-        type
-        # amt
-        respCode
-        authCode
       }
     }
   }
 `;
 
-export interface Pagination {
-  page: number;
-  pageSize: number;
-}
-
 export function Transactions() {
-  const [pagination, setPagination] = useState<Pagination>({
-    page: 1,
-    pageSize: 100
-  });
+  const [limit] = useState(10);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [items, setItems] = useState<any[]>([]);
 
-  const columns: Array<Column<ITransaction>> = [
-    { title: "UUID", field: "uuid" },
-    // { title: "RRN", field: "rrn" },
-    // { title: "STAN", field: "stan" },
-    { title: "DateTime", field: "datetime" },
-    { title: "Type", field: "type" },
-    // { title: "AMT", field: "amt" },
-    { title: "Response", field: "respCode" },
-    { title: "Auth Code", field: "authCode" }
-  ];
-
-  const transactions = useQuery<{
+  const { loading, data, error, fetchMore } = useQuery<{
     transactions: {
-      total: number;
-      items: ITransaction[];
+      cursor: string;
+      haveMore: boolean;
+      items: any[];
     };
-  }>(LIST_TRANSACTIONS, {
-    variables: pagination,
-    displayName: "Transactions"
+  }>(LOAD_MORE_TRANSACTIONS, {
+    variables: { cursor, limit }
   });
-
-  const updatePage = (page: number) => {
-    setPagination((data: Pagination) => ({ page, ...data }));
-  };
-
-  const updatePageSize = (pageSize: number) => {
-    setPagination((data: Pagination) => ({ pageSize, ...data }));
-  };
 
   useEffect(() => {
-    transactions.refetch();
-  }, [transactions, pagination]);
+    fetchMore({
+      query: LOAD_MORE_TRANSACTIONS,
+      variables: { cursor, limit },
+      updateQuery: (previousResult, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return previousResult;
+        }
 
-  if (transactions.error) {
-    return <p>{transactions.error.message}</p>;
+        const moreItems = fetchMoreResult
+          ? fetchMoreResult.transactions.items
+          : [];
+
+        setItems(prev => [...prev, ...moreItems]);
+
+        return fetchMoreResult;
+      }
+    });
+  }, [fetchMore, cursor, limit]);
+
+  if (error) {
+    return <p>{error.message}</p>;
   }
 
-  const props = {
-    title: "Transactions",
-    data: transactions.data ? transactions.data.transactions.items : [],
-    // totalCount: transactions.data ? transactions.data.transactions.total : 0,
-    isLoading: transactions.loading,
-    onChangePage: updatePage,
-    onChangeRowsPerPage: updatePageSize,
-    columns,
-    options: { exportButton: true },
-    ...pagination
-  };
-
+  // XXX: https://github.com/AndyNormann/mvp-todo-frontend/blob/de9c421d5ff6449919e1afda89e9a6e062133cc1/src/Components/ListPage.js#L108
   return (
-    <div style={{ color: "white" }}>
-      <MaterialTable {...props} />
-    </div>
+    <>
+      {items.map((trx: ITransaction) => {
+        return JSON.stringify(trx);
+      })}
+      {loading ? (
+        <p>loading...</p>
+      ) : (
+        <>
+          {data && data.transactions.haveMore && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => data && setCursor(data.transactions.cursor)}
+            >
+              Next Page
+            </Button>
+          )}
+        </>
+      )}
+    </>
   );
 }

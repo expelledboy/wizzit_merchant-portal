@@ -57,3 +57,7 @@ export interface IPagination {
   page: number;
   pageSize: number;
 }
+
+export interface ICursor {
+  cursor: string | null;
+}

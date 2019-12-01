@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MaterialTable, { Column } from "material-table";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { useEffect } from "react";
 import { IClient, IPagination } from "../types";
+import { pick } from "ramda";
+
+const tryCatchOn = (func, when) => (...args) => {
+  try {
+    return func(...args);
+  } catch (e) {
+    console.error("ERROR", e);
+  }
+};
 
 export const LIST_CLIENTS = gql`
   query clients($page: Int, $pageSize: Int) {
@@ -27,14 +35,10 @@ export const UPDATE_CLIENT = gql`
 
 export function Clients() {
   const [pagination, setPagination] = useState<IPagination>({
-    page: 1,
+    // search: "",
+    page: 0,
     pageSize: 10
   });
-
-  const columns: Array<Column<IClient>> = [
-    { title: "Mobile Number", field: "msisdn", editable: "never" },
-    { title: "Active", field: "active", type: "boolean" }
-  ];
 
   const clients = useQuery<{
     clients: {
@@ -47,71 +51,54 @@ export function Clients() {
     displayName: "Clients"
   });
 
-  const updatePage = (page: number) => {
-    setPagination((data: IPagination) => ({ page, ...data }));
-  };
-
-  const updatePageSize = (pageSize: number) => {
-    setPagination((data: IPagination) => ({ pageSize, ...data }));
-  };
-
   const refetchQueries = [{ query: LIST_CLIENTS, variables: pagination }];
+  const [updateClient] = useMutation<void>(UPDATE_CLIENT, { refetchQueries });
 
-  const [updateClient] = useMutation<void>(UPDATE_CLIENT, {
-    refetchQueries
-  });
-
-  const onRowUpdate = async (data: any, _prev: any | undefined) => {
-    const { active } = data;
-    const client = { active };
-
-    try {
-      await updateClient({ variables: { clientId: data.clientId, client } });
-    } catch (error) {
-      console.log("onRowUpdate", error);
-    }
-  };
+  const columns: Array<Column<IClient>> = [
+    { title: "Mobile Number", field: "msisdn", editable: "never" },
+    { title: "Active", field: "active", type: "boolean" }
+  ];
 
   const editable = {
-    onRowUpdate
+    onRowUpdate: tryCatchOn(async (client: IClient) => {
+      const updates = pick(["active"], client);
+      await updateClient({
+        variables: { clientId: client.clientId, client: updates }
+      });
+    }, "onRowUpdate")
   };
+
+  const updatePage = async (page: number) => {
+    setPagination((data: IPagination) => ({ ...data, page }));
+  };
+
+  const updatePageSize = async (pageSize: number) => {
+    setPagination((data: IPagination) => ({ ...data, page: 0, pageSize }));
+  };
+
+  useEffect(() => {
+    clients.refetch({ variables: { pagination } });
+  }, [pagination, clients.refetch]);
 
   if (clients.error) {
     return <p>{clients.error.message}</p>;
   }
 
-  const loadData = async () => {
-    await clients.refetch();
-
-    const { items, total, page } = !!clients.data
-      ? clients.data.clients
-      : {
-          items: [],
-          total: 0,
-          page: 0
-        };
-
-    console.log({ items, total, page, clients });
-
-    return {
-      data: items,
-      totalCount: total,
-      page
-    };
-  };
-
   const props = {
     title: "Clients",
     columns,
-    data: loadData,
-    isLoading: clients.loading,
     onChangePage: updatePage,
     onChangeRowsPerPage: updatePageSize,
+    isLoading: clients.loading,
+    data: clients.data ? clients.data.clients.items : [],
+    totalCount: clients.data && clients.data.clients.total,
+    page: pagination.page,
     editable,
     options: {
       // TODO: Until we implement paginated searches disable this for now.
       search: false,
-      ...pagination
+      pageSize: pagination.pageSize,
+      debounceInterval: 600
     }
   };
 

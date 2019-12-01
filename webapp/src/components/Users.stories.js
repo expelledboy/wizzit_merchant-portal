@@ -24,7 +24,7 @@ casual.define("merchantId", function() {
 });
 
 let users = generateUnique(
-  3,
+  7,
   () => ({
     id: casual.integer(100, 200),
     email: casual.email,
@@ -45,20 +45,16 @@ const mocks = {
     }
   }),
   Query: () => ({
-    users(_root, { page, pageSize }) {
-      let start = page * pageSize - pageSize;
-      let end = page * pageSize;
+    users(_root, args) {
       return {
         total: users.length,
-        items: users.slice(start, end)
+        items: users
       };
     },
-    merchants(_root, { page, pageSize }) {
-      let start = page * pageSize - pageSize;
-      let end = page * pageSize;
+    merchants(_root, args) {
       return {
         total: merchants.length,
-        items: merchants.slice(start, end)
+        items: merchants
       };
     }
   }),

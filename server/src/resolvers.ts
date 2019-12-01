@@ -297,23 +297,20 @@ const flattenTransaction = (data: any) => {
 
 const transactions = async (
   _parent: any,
-  { page, pageSize }: any,
+  { cursor }: any,
   { merchantId, txEngine }: any
 ) => {
-  console.log({ merchantId });
+  console.log("transactions", { merchantId });
   return txEngine
     .post("/", {
       merchant_id: merchantId,
-      page,
-      pageSize
+      cursor
     })
-    .then(({ data: transactions }: any) => {
-      console.log(transactions);
+    .then(({ data, cursor, haveMore }: any) => {
       return {
-        total: 0,
-        items: transactions
-          .map(flattenTransaction)
-          .filter((trx: any) => trx !== null)
+        cursor,
+        haveMore,
+        items: data
       };
     });
 };

@@ -6,7 +6,7 @@ import { storiesOf } from "@storybook/react";
 import { createApolloProvider } from "../@utils/apollo-decorator";
 import { Clients } from "./Clients";
 
-const clients = [...Array(4)].map(() => ({
+const clients = [...Array(12)].map(() => ({
   clientId: casual.uuid,
   msisdn: casual.numerify("27#########"),
   active: casual.boolean
@@ -14,9 +14,13 @@ const clients = [...Array(4)].map(() => ({
 
 const mocks = {
   Query: () => ({
-    clients(_root, { page, pageSize }) {
-      let start = page * pageSize - pageSize;
-      let end = page * pageSize;
+    clients(_root, args) {
+      console.log("clients", args);
+      const { page, pageSize } = args;
+
+      let start = (page + 1) * pageSize - pageSize;
+      let end = (page + 1) * pageSize;
+
       return {
         total: clients.length,
         items: clients.slice(start, end)

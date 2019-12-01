@@ -6,7 +6,7 @@ import { storiesOf } from "@storybook/react";
 import { createApolloProvider } from "../@utils/apollo-decorator";
 import { Merchants } from "./Merchants";
 
-let merchants = [...Array(3)].map(() => ({
+let merchants = [...Array(7)].map(() => ({
   id: casual.integer(100, 200),
   merchantId: casual.uuid,
   name: casual.company_name,
@@ -19,12 +19,10 @@ let merchants = [...Array(3)].map(() => ({
 
 const mocks = {
   Query: () => ({
-    merchants(_root, { page, pageSize }) {
-      let start = page * pageSize - pageSize;
-      let end = page * pageSize;
+    merchants(_root, args) {
       return {
         total: merchants.length,
-        items: merchants.slice(start, end)
+        items: merchants
       };
     }
   }),
