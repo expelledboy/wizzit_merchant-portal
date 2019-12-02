@@ -11,7 +11,6 @@ export interface IMerchant {
   terminalId: string;
   address: string;
   active: boolean;
-  editting: boolean;
 }
 
 export interface ICreateUser extends ICredentials {
@@ -22,7 +21,7 @@ export interface ICreateUser extends ICredentials {
 export interface IUser extends ICreateUser {
   id: string;
   active: boolean;
-  editting: boolean;
+  merchantId: string;
 }
 
 export interface IClient {

@@ -3,3 +3,7 @@ declare module "apollo-link-watched-mutation" {
 
   export default WatchedMutationLink;
 }
+
+declare module "filefy";
+
+declare module "react-month-picker";

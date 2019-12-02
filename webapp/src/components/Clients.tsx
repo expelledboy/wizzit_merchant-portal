@@ -5,11 +5,11 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { IClient, IPagination } from "../types";
 import { pick } from "ramda";
 
-const tryCatchOn = (func, when) => (...args) => {
+const tryCatchOn = (func: any, when: string) => (...args: any[]) => {
   try {
     return func(...args);
   } catch (e) {
-    console.error("ERROR", e);
+    console.error("ERROR", when, e);
   }
 };
 
