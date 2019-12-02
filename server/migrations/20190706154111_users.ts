@@ -1,4 +1,5 @@
 import * as Knex from "knex";
+import { onUpdateTrigger } from "../knexfile";
 
 export async function up(knex: Knex): Promise<any> {
   await knex.schema.createTable("users", table => {
@@ -11,7 +12,7 @@ export async function up(knex: Knex): Promise<any> {
     table.enu("role", ["Admin", "MerchantUser"]).defaultTo("MerchantUser");
     table.boolean("active").defaultTo(false);
     table.unique(["email"]);
-    table.timestamps();
+    table.timestamps(true, true);
   });
 
   await knex.schema.table("merchants", table => {
@@ -20,6 +21,8 @@ export async function up(knex: Knex): Promise<any> {
       .unsigned()
       .references("users.id");
   });
+
+  await knex.raw(onUpdateTrigger("users"));
 }
 
 export async function down(knex: Knex): Promise<any> {

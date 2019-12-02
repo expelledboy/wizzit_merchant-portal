@@ -1,8 +1,23 @@
+// type Transaction {
+//   id: ID!
+//   type: String
+//   version: String
+//   amount: Int
+//   msisdn: String
+//   merchantId: String
+//   createdAt: String
+//   authCode: String
+//   respCode: String
+//   status: String
+//   trxId: String
+// }
+
 export const transform = (data: any) => {
-  const { trx_id, created_at, actions, status: trxStatus } = data;
+  const { _id, trx_id, created_at, actions, status: trxStatus } = data;
   const trx = {};
 
   Object.assign(trx, {
+    id: _id,
     trxId: trx_id,
     createdAt: created_at,
     status: trxStatus
@@ -18,13 +33,14 @@ export const transform = (data: any) => {
       const {
         pay: {
           result: { auth } = { auth: null },
-          context: { amount, tx_type } = { amount: null, tx_type: null }
+          context: { amount } = { amount: null }
         }
       } = detail;
       Object.assign(trx, {
-        auth: auth,
+        authCode: auth,
         amount,
-        type: tx_type
+        type: data.meta.type,
+        version: data.meta.version
       });
     }
   };
@@ -33,6 +49,7 @@ export const transform = (data: any) => {
 
   if (!transform[transformKey]) {
     console.warn("unhandled transaction type: " + transformKey);
+    Object.assign(trx, { type: "Unknown" });
     return trx;
   }
 

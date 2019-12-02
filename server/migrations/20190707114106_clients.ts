@@ -1,4 +1,5 @@
 import * as Knex from "knex";
+import { onUpdateTrigger } from "../knexfile";
 
 export async function up(knex: Knex): Promise<any> {
   await knex.schema.createTable("clients", table => {
@@ -6,8 +7,10 @@ export async function up(knex: Knex): Promise<any> {
     table.string("msisdn").index();
     table.boolean("active");
     table.unique(["msisdn"]);
-    table.timestamps();
+    table.timestamps(true, true);
   });
+
+  await knex.raw(onUpdateTrigger("clients"));
 }
 
 export async function down(knex: Knex): Promise<any> {

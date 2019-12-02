@@ -1,4 +1,5 @@
 import * as Knex from "knex";
+import { onUpdateTrigger } from "../knexfile";
 
 export async function up(knex: Knex): Promise<any> {
   await knex.schema.createTable("transactions", table => {
@@ -12,8 +13,10 @@ export async function up(knex: Knex): Promise<any> {
     table.json("trx_recv");
     table.string("trx_rsp_code");
     table.string("trx_auth_code");
-    table.timestamps();
+    table.timestamps(true, true);
   });
+
+  await knex.raw(onUpdateTrigger("transactions"));
 }
 
 export async function down(knex: Knex): Promise<any> {
