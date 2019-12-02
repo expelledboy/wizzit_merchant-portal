@@ -31,7 +31,7 @@ export interface IClient {
   active: boolean;
 }
 
-export interface ITransaction {
+export interface IClient {
   clientId: string;
   msisdn: string;
   active: boolean;

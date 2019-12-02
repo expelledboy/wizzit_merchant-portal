@@ -133,8 +133,6 @@ export function Transactions() {
       }, []);
     });
 
-    console.log({ headers, flatmap });
-
     builder
       .setDelimeter(",")
       .setColumns(headers)
@@ -149,7 +147,7 @@ export function Transactions() {
         <List component="nav">
           {items.map((trx: ITransaction) => {
             return (
-              <ListItem className={classes.record} divider>
+              <ListItem key={trx.uuid} className={classes.record} divider>
                 {formatTransaction(trx)}
               </ListItem>
             );

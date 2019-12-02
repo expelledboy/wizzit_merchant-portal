@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon -r ts-node/register/transpile-only -r dotenv/config src/index.ts",
+    "start": "nodemon -e ts,graphql -r ts-node/register/transpile-only -r dotenv/config src/index.ts",
     "migrate": "knex migrate:latest --knexfile knexfile.ts",
     "migrate:make": "knex migrate:make --knexfile knexfile.ts",
     "seed": "knex seed:run --knexfile knexfile.ts"

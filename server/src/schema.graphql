@@ -92,11 +92,20 @@ type Card {
 
 type Transaction {
   id: ID!
-  amount: Int!
+  type: String
+  version: String
+  amount: Int
+  msisdn: String
+  merchantId: String
+  createdAt: String
+  authCode: String
+  respCode: String
+  status: String
+  trxId: String
 }
 
 type TransactionPage {
-  cursor: ID!
+  next: ID!
   haveMore: Boolean!
   items: [Transaction]!
 }
@@ -121,7 +130,8 @@ type Query {
   users: UserPage!
   merchants: MerchantPage!
   clients(page: Int, pageSize: Int): ClientPage!
-  transactions(cursor: ID, limit: Int): TransactionPage!
+  transactions(next: ID, limit: Int): TransactionPage!
+  report(merchantId: ID, date: String): [Transaction]!
 }
 
 type Mutation {
