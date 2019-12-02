@@ -1,9 +1,19 @@
 import React from "react";
 import { ITransaction } from "../types";
-// import useInfiniteScroll from "../hooks/useInfiniteScroll";
 import gql from "graphql-tag";
 import { useState } from "react";
-import { Button } from "@material-ui/core";
+import { CsvBuilder } from "filefy";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  makeStyles,
+  Theme,
+  List,
+  ListItem,
+  Typography
+} from "@material-ui/core";
 import { useQuery } from "@apollo/react-hooks";
 import { useEffect } from "react";
 
@@ -20,7 +30,40 @@ export const LOAD_MORE_TRANSACTIONS = gql`
   }
 `;
 
+const useStyles = makeStyles((_theme: Theme) => ({
+  record: {
+    margin: "2px"
+  },
+  kv: {
+    margin: "2px"
+  }
+}));
+
+const KeyValue = ({ label, value }: { label: string; value: string }) => {
+  const classes = useStyles();
+
+  return (
+    <Typography className={classes.kv} variant="body1">
+      <b>{label}</b>: {value}
+    </Typography>
+  );
+};
+
+const formatTransaction = (trx: any) => {
+  switch (trx.__typename) {
+    case "Transaction":
+      return (
+        <>
+          <KeyValue label="Amount" value={trx.amount} />
+        </>
+      );
+    default:
+      return JSON.stringify(trx);
+  }
+};
+
 export function Transactions() {
+  const classes = useStyles();
   const [limit] = useState(10);
   const [cursor, setCursor] = useState<string | null>(null);
   const [items, setItems] = useState<any[]>([]);
@@ -59,27 +102,80 @@ export function Transactions() {
     return <p>{error.message}</p>;
   }
 
+  const exportItems = () => {
+    const types: string[] = [];
+    const headers: string[] = [];
+
+    items.forEach(item => {
+      if (types.includes(item.__typename)) {
+        return;
+      }
+
+      Object.keys(item).forEach((key: string) => {
+        if (headers.includes(key)) {
+          return;
+        }
+
+        if (key === "__typename") {
+          return;
+        }
+
+        headers.push(key);
+      });
+    });
+
+    const builder = new CsvBuilder("transactions.csv");
+
+    const flatmap = items.map(item => {
+      return headers.reduce((acc: string[], header: string) => {
+        acc.push(!!item[header] ? item[header] : null);
+        return acc;
+      }, []);
+    });
+
+    console.log({ headers, flatmap });
+
+    builder
+      .setDelimeter(",")
+      .setColumns(headers)
+      .addRows(flatmap)
+      .exportFile();
+  };
+
   // XXX: https://github.com/AndyNormann/mvp-todo-frontend/blob/de9c421d5ff6449919e1afda89e9a6e062133cc1/src/Components/ListPage.js#L108
   return (
-    <>
-      {items.map((trx: ITransaction) => {
-        return JSON.stringify(trx);
-      })}
-      {loading ? (
-        <p>loading...</p>
-      ) : (
-        <>
-          {data && data.transactions.haveMore && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => data && setCursor(data.transactions.cursor)}
-            >
-              Next Page
-            </Button>
-          )}
-        </>
-      )}
-    </>
+    <Card>
+      <CardContent>
+        <List component="nav">
+          {items.map((trx: ITransaction) => {
+            return (
+              <ListItem className={classes.record} divider>
+                {formatTransaction(trx)}
+              </ListItem>
+            );
+          })}
+        </List>
+      </CardContent>
+      <CardActions>
+        <Button variant="contained" color="primary" onClick={exportItems}>
+          Export
+        </Button>
+        {loading ? (
+          <p>loading...</p>
+        ) : (
+          <>
+            {data && data.transactions.haveMore && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => data && setCursor(data.transactions.cursor)}
+              >
+                Load More
+              </Button>
+            )}
+          </>
+        )}
+      </CardActions>
+    </Card>
   );
 }

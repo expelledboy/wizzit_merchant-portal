@@ -5,7 +5,8 @@ import { createApolloProvider } from "../@utils/apollo-decorator";
 import { Transactions } from "./Transactions";
 
 const transactions = [...Array(31)].map(() => ({
-  id: casual.uuid
+  id: casual.uuid,
+  amount: casual.integer(0, 1000)
 }));
 
 const mocks = {
