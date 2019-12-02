@@ -24,7 +24,7 @@ import { Lock, ContactSupport, LockOpen } from "@material-ui/icons";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { gqlClient } from "./graphql/client";
 
-import { Pages, Links } from "./pages/index";
+import { Pages, Links } from "./pages/Navigation";
 import { LOCALSTORAGE_TOKEN } from "./constants";
 
 const drawerWidth = 240;
@@ -107,10 +107,10 @@ const App: React.FC = () => {
                     <LockOpen /> Logout
                   </Button>
                 ) : (
-                  <Button color="inherit" onClick={onClickLogin}>
-                    <Lock /> Login
+                    <Button color="inherit" onClick={onClickLogin}>
+                      <Lock /> Login
                   </Button>
-                )}
+                  )}
               </Toolbar>
             </AppBar>
             <Drawer
