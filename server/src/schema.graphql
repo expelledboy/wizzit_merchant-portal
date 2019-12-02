@@ -102,6 +102,7 @@ type Transaction {
   respCode: String
   status: String
   trxId: String
+  refId: String
 }
 
 type TransactionPage {

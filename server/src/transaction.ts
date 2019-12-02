@@ -1,46 +1,36 @@
-// type Transaction {
-//   id: ID!
-//   type: String
-//   version: String
-//   amount: Int
-//   msisdn: String
-//   merchantId: String
-//   createdAt: String
-//   authCode: String
-//   respCode: String
-//   status: String
-//   trxId: String
-// }
-
 export const transform = (data: any) => {
-  const { _id, trx_id, created_at, actions, status: trxStatus } = data;
-  const trx = {};
+  const { _id, trx_id, status, meta, actions, created_at } = data;
 
-  Object.assign(trx, {
+  const trx = {
     id: _id,
     trxId: trx_id,
     createdAt: created_at,
-    status: trxStatus
-  });
-
-  const detail = actions.reduce((acc: any, action: any) => {
-    Object.assign(acc, { [action.name]: action });
-    return acc;
-  }, {});
+    status,
+    merchantId: meta.merchant_id || "Unknown",
+    type: meta.type || "Unknown",
+    version: meta.version
+  };
 
   const transform = {
-    "secure_card_capture:1.0": () => {
-      const {
-        pay: {
-          result: { auth } = { auth: null },
-          context: { amount } = { amount: null }
-        }
-      } = detail;
+    "scc:1.0": () => {
       Object.assign(trx, {
-        authCode: auth,
-        amount,
-        type: data.meta.type,
-        version: data.meta.version
+        refId: actions[0].params.payload.ref_id
+      });
+    },
+    "pay:1.0": () => {
+      Object.assign(trx, {
+        msisdn: actions[0].params.msisdn,
+        respCode: actions[3].context.payload.response_code.status,
+        authCode: actions[3].context.payload.response_code.auth,
+        amount: actions[1].params.amount
+      });
+    },
+    "link_card:1.0": () => {
+      Object.assign(trx, {
+        msisdn: actions[0].params.msisdn,
+        respCode: actions[3].context.payload.response_code.status,
+        authCode: actions[3].context.payload.response_code.auth,
+        amount: actions[1].params.amount
       });
     }
   };
@@ -49,7 +39,6 @@ export const transform = (data: any) => {
 
   if (!transform[transformKey]) {
     console.warn("unhandled transaction type: " + transformKey);
-    Object.assign(trx, { type: "Unknown" });
     return trx;
   }
 
