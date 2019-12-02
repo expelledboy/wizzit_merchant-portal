@@ -216,13 +216,10 @@ export const resolvers = {
     login,
     aken,
     signup,
-
     createMerchant,
     updateMerchant,
     deleteMerchant,
-
     updateUser,
-
     updateClient
   }
 };

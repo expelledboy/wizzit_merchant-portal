@@ -37,6 +37,8 @@ const isRole = (role: Role) =>
     return ctx.role && ctx.role === Symbol.keyFor(role);
   });
 
+const isAdmin = and(isAuthenticated, isRole(Admin));
+
 // const isPostOwner = rule()(async (parent, args, ctx, info) => {
 //   const author = await ctx.prisma.posts
 //     .findOne({
@@ -53,8 +55,17 @@ const isRole = (role: Role) =>
 export const permissions = shield({
   Query: {
     me: isAuthenticated,
-    merchants: and(isAuthenticated, isRole(Admin)),
-    users: and(isAuthenticated, isRole(Admin)),
-    clients: and(isAuthenticated, isRole(Admin))
+    merchants: isAdmin,
+    users: isAdmin,
+    clients: isAdmin,
+    transactions: isAuthenticated,
+    report: isAuthenticated
+  },
+  Mutation: {
+    createMerchant: isAdmin,
+    updateMerchant: isAdmin,
+    deleteMerchant: isAdmin,
+    updateUser: isAdmin,
+    updateClient: isAdmin
   }
 });

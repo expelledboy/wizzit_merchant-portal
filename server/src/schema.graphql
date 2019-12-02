@@ -138,12 +138,9 @@ type Mutation {
   aken(merchantId: String!, password: String!): AkenAuth!
   login(email: String!, password: String!): Authentication!
   signup(merchant: CreateUserInput!): Authentication!
-
   createMerchant(merchant: CreateMerchantInput!): ID
   updateMerchant(id: ID!, merchant: UpdateMerchantInput!): Boolean!
   deleteMerchant(id: ID!): Boolean!
-
   updateUser(id: ID!, user: UpdateUserInput!): Boolean!
-
   updateClient(clientId: ID!, client: UpdateClientInput!): Boolean!
 }
