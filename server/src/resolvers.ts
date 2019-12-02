@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { MerchantUser } from "./constants";
 import { createToken } from "./permissions";
 import uuid from "uuid/v4";
-import { flattenTransaction } from "./flattenTransaction";
+import { transform } from "./transaction";
 
 const signup = async (_parent: any, { merchant }, { db }) => {
   const password = await bcrypt.hash(merchant.password, 10);
@@ -174,9 +174,7 @@ const transactions = async (
       return {
         next,
         haveMore: hasNext,
-        items: transactions
-          .map(flattenTransaction)
-          .filter((trx: any) => trx !== null)
+        items: transactions.map(transform).filter((trx: any) => trx !== null)
       };
     });
 };
@@ -194,9 +192,7 @@ const report = async (
   };
 
   return txEngine.post("/report", request).then((transactions: any) => {
-    return transactions.data
-      .map(flattenTransaction)
-      .filter((trx: any) => trx !== null);
+    return transactions.data.map(transform).filter((trx: any) => trx !== null);
   });
 };
 
