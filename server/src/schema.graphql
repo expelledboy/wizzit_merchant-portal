@@ -106,7 +106,7 @@ type Transaction {
 }
 
 type TransactionPage {
-  next: ID!
+  next: ID
   haveMore: Boolean!
   items: [Transaction]!
 }

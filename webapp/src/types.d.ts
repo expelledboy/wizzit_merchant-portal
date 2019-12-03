@@ -37,6 +37,7 @@ export interface IClient {
 }
 
 export interface ITransaction {
+  id: string;
   uuid: string;
   rrn: string;
   stan: string;

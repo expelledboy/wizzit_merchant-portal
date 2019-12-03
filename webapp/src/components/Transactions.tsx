@@ -2,7 +2,6 @@ import React from "react";
 import { ITransaction } from "../types";
 import gql from "graphql-tag";
 import { useState } from "react";
-import { CsvBuilder } from "filefy";
 import {
   Button,
   Card,
@@ -10,78 +9,209 @@ import {
   CardContent,
   makeStyles,
   Theme,
-  List,
-  ListItem,
-  Typography
+  Typography,
+  Chip,
+  Table,
+  TableHead,
+  TableCell,
+  TableRow,
+  TableBody,
+  Select,
+  MenuItem
 } from "@material-ui/core";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 import { useEffect } from "react";
+import { exportItems } from "../@utils/exportCsv";
 
 export const LOAD_MORE_TRANSACTIONS = gql`
-  query($cursor: ID, $limit: Int) {
-    transactions(cursor: $cursor, limit: $limit) {
-      cursor
+  query($next: ID, $limit: Int) {
+    transactions(next: $next, limit: $limit) {
+      next
       haveMore
       items {
         id
+        type
+        version
         amount
+        msisdn
+        merchantId
+        createdAt
+        authCode
+        respCode
+        status
+        trxId
+        refId
       }
     }
   }
 `;
 
-const useStyles = makeStyles((_theme: Theme) => ({
+export const TRANSACTION_REPORT = gql`
+  query($merchantId: ID, $date: String) {
+    report(merchantId: $merchantId, date: $date) {
+      id
+      type
+      version
+      amount
+      msisdn
+      merchantId
+      createdAt
+      authCode
+      respCode
+      status
+      trxId
+    }
+  }
+`;
+
+const useStyles = makeStyles((theme: Theme) => ({
   record: {
     margin: "2px"
   },
   kv: {
     margin: "2px"
+  },
+  completed: {
+    backgroundColor: "#a4c639"
+  },
+  pending: {
+    backgroundColor: "#5d8aa8"
+  },
+  rolledback: {
+    backgroundColor: "#9966cc"
+  },
+  processing: {
+    backgroundColor: "#7fffd4"
   }
 }));
 
 const KeyValue = ({ label, value }: { label: string; value: string }) => {
-  const classes = useStyles();
-
   return (
-    <Typography className={classes.kv} variant="body1">
+    <>
       <b>{label}</b>: {value}
-    </Typography>
+      <br />
+    </>
   );
 };
 
-const formatTransaction = (trx: any) => {
-  switch (trx.__typename) {
-    case "Transaction":
-      return (
+const formatTimestamp = (dateString: string) => {
+  return new Date(dateString).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric"
+  });
+};
+
+const Transaction = ({ data: trx }: any) => {
+  const classes = useStyles();
+
+  const transaction = ({
+    single_entry: {
+      type: "Single Entry",
+      detail: (
+        <>
+          <KeyValue label="Transaction ID" value={trx.trxId} />
+        </>
+      )
+    },
+    scc: {
+      type: "Secured Capture"
+    },
+    pay: {
+      type: "Pay",
+      detail: (
         <>
           <KeyValue label="Amount" value={trx.amount} />
+          <KeyValue label="MSISDN" value={trx.msisdn} />
+          <KeyValue label="Response" value={trx.respCode} />
         </>
-      );
-    default:
-      return JSON.stringify(trx);
-  }
+      )
+    },
+    link_card: {
+      type: "Link Card",
+      detail: (
+        <>
+          <KeyValue label="MSISDN" value={trx.msisdn} />
+          <KeyValue label="Response" value={trx.respCode} />
+        </>
+      )
+    }
+  } as any)[trx.type] || {
+    type: "Unknown"
+  };
+
+  return (
+    <TableRow key={trx.id}>
+      <TableCell>
+        <Chip
+          label={trx.status}
+          className={(classes as Record<string, string>)[trx.status]}
+        />
+      </TableCell>
+      <TableCell>
+        <Typography variant="body2">
+          <KeyValue label="Type" value={transaction.type} />
+          <KeyValue label="ID" value={trx.trxId} />
+          {formatTimestamp(trx.createdAt)}
+        </Typography>
+      </TableCell>
+      <TableCell>
+        <Typography variant="body2">{transaction.detail}</Typography>
+      </TableCell>
+    </TableRow>
+  );
 };
 
 export function Transactions() {
-  const classes = useStyles();
+  // const classes = useStyles();
   const [limit] = useState(10);
-  const [cursor, setCursor] = useState<string | null>(null);
+  const [next, setNext] = useState<string | null>(null);
   const [items, setItems] = useState<any[]>([]);
+
+  const [callReport, { loading: reportActive }] = useLazyQuery<{
+    report: ITransaction[];
+  }>(TRANSACTION_REPORT, {
+    fetchPolicy: "no-cache",
+    onCompleted: ({ report }) => {
+      exportItems(report, `wizzit-report-${month}-${year}`);
+    }
+  });
+
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth());
 
   const { loading, data, error, fetchMore } = useQuery<{
     transactions: {
-      cursor: string;
+      next: string;
       haveMore: boolean;
       items: any[];
     };
   }>(LOAD_MORE_TRANSACTIONS, {
-    variables: { cursor, limit }
+    variables: { next, limit }
   });
+
+  const pickMonth = {
+    years: [now.getFullYear(), now.getFullYear() - 1],
+    months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  };
+
+  const requestReport = () => {
+    callReport({
+      variables: {
+        // merchantId: data && data.me.merchantId,
+        date: new Date(year, month, 1).toISOString().slice(0, 10)
+      }
+    });
+  };
 
   useEffect(() => {
     fetchMore({
       query: LOAD_MORE_TRANSACTIONS,
-      variables: { cursor, limit },
+      variables: { next, limit },
       updateQuery: (previousResult, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return previousResult;
@@ -96,66 +226,37 @@ export function Transactions() {
         return fetchMoreResult;
       }
     });
-  }, [fetchMore, cursor, limit]);
+  }, [fetchMore, next, limit]);
 
   if (error) {
     return <p>{error.message}</p>;
   }
 
-  const exportItems = () => {
-    const types: string[] = [];
-    const headers: string[] = [];
-
-    items.forEach(item => {
-      if (types.includes(item.__typename)) {
-        return;
-      }
-
-      Object.keys(item).forEach((key: string) => {
-        if (headers.includes(key)) {
-          return;
-        }
-
-        if (key === "__typename") {
-          return;
-        }
-
-        headers.push(key);
-      });
-    });
-
-    const builder = new CsvBuilder("transactions.csv");
-
-    const flatmap = items.map(item => {
-      return headers.reduce((acc: string[], header: string) => {
-        acc.push(!!item[header] ? item[header] : null);
-        return acc;
-      }, []);
-    });
-
-    builder
-      .setDelimeter(",")
-      .setColumns(headers)
-      .addRows(flatmap)
-      .exportFile();
+  const exportView = () => {
+    return exportItems(items, `wizzit-report`);
   };
 
   // XXX: https://github.com/AndyNormann/mvp-todo-frontend/blob/de9c421d5ff6449919e1afda89e9a6e062133cc1/src/Components/ListPage.js#L108
   return (
     <Card>
       <CardContent>
-        <List component="nav">
-          {items.map((trx: ITransaction) => {
-            return (
-              <ListItem key={trx.uuid} className={classes.record} divider>
-                {formatTransaction(trx)}
-              </ListItem>
-            );
-          })}
-        </List>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Status</TableCell>
+              <TableCell>Transaction</TableCell>
+              <TableCell>Detail</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {items.map((trx: ITransaction) => (
+              <Transaction key={trx.id} data={trx} />
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
       <CardActions>
-        <Button variant="contained" color="primary" onClick={exportItems}>
+        <Button variant="contained" color="primary" onClick={exportView}>
           Export
         </Button>
         {loading ? (
@@ -166,13 +267,43 @@ export function Transactions() {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => data && setCursor(data.transactions.cursor)}
+                onClick={() => data && setNext(data.transactions.next)}
               >
                 Load More
               </Button>
             )}
           </>
         )}
+        <div style={{ flexGrow: 1 }} />
+        <Select
+          id="select-year"
+          value={year}
+          onChange={(e: React.ChangeEvent<{ value: any }>) => {
+            setYear(e.target.value);
+          }}
+        >
+          {pickMonth.years.map(year => (
+            <MenuItem key={year} value={year}>
+              {year}
+            </MenuItem>
+          ))}
+        </Select>
+        <Select
+          id="select-month"
+          value={month}
+          onChange={(e: React.ChangeEvent<{ value: any }>) => {
+            setMonth(e.target.value);
+          }}
+        >
+          {pickMonth.months.map(month => (
+            <MenuItem key={month} value={month}>
+              {month}
+            </MenuItem>
+          ))}
+        </Select>
+        <Button size="small" onClick={requestReport} disabled={reportActive}>
+          Export Report
+        </Button>
       </CardActions>
     </Card>
   );

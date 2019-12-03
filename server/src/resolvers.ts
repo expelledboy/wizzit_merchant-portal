@@ -168,15 +168,14 @@ const transactions = async (
     ...(next && { next })
   };
 
-  return txEngine
-    .post("/query", request)
-    .then(({ items: transactions, next, hasNext }: any) => {
-      return {
-        next,
-        haveMore: hasNext,
-        items: transactions.map(transform).filter((trx: any) => trx !== null)
-      };
-    });
+  return txEngine.post("/query", request).then((response: any) => {
+    const { items: transactions, next, hasNext } = response.data;
+    return {
+      next,
+      haveMore: hasNext,
+      items: transactions.map(transform).filter((trx: any) => trx !== null)
+    };
+  });
 };
 
 const report = async (

@@ -56,14 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       padding: theme.spacing(3)
     },
-    toolbar: theme.mixins.toolbar,
-    footer: {
-      position: "fixed",
-      padding: theme.spacing(4, 2),
-      color: "#fff",
-      bottom: 0,
-      width: "100%"
-    }
+    toolbar: theme.mixins.toolbar
   })
 );
 
@@ -107,10 +100,10 @@ const App: React.FC = () => {
                     <LockOpen /> Logout
                   </Button>
                 ) : (
-                    <Button color="inherit" onClick={onClickLogin}>
-                      <Lock /> Login
+                  <Button color="inherit" onClick={onClickLogin}>
+                    <Lock /> Login
                   </Button>
-                  )}
+                )}
               </Toolbar>
             </AppBar>
             <Drawer
@@ -128,9 +121,6 @@ const App: React.FC = () => {
             <main className={classes.content}>
               <div className={classes.toolbar} />
               <Pages />
-              <div className={classes.footer}>
-                &copy; Wizzit {new Date().getFullYear()}
-              </div>
             </main>
           </div>
         </Router>

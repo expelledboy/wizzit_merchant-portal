@@ -78,7 +78,7 @@ export function Clients() {
 
   useEffect(() => {
     clients.refetch({ variables: { pagination } });
-  }, [pagination, clients.refetch]);
+  }, [pagination, clients]);
 
   if (clients.error) {
     return <p>{clients.error.message}</p>;
