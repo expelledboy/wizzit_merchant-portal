@@ -110,12 +110,7 @@ const Transaction = ({ data: trx }: any) => {
 
   const transaction = ({
     single_entry: {
-      type: "Single Entry",
-      detail: (
-        <>
-          <KeyValue label="Transaction ID" value={trx.trxId} />
-        </>
-      )
+      type: "Single Entry"
     },
     scc: {
       type: "Secured Capture"
@@ -127,7 +122,6 @@ const Transaction = ({ data: trx }: any) => {
           <KeyValue label="Amount" value={trx.amount} />
           <KeyValue label="MSISDN" value={trx.msisdn} />
           <KeyValue label="Response" value={trx.respCode} />
-          <KeyValue label="Reference" value={trx.refId || "None"} />
         </>
       )
     },
@@ -155,12 +149,15 @@ const Transaction = ({ data: trx }: any) => {
       <TableCell>
         <Typography variant="body2">
           <KeyValue label="Type" value={transaction.type} />
+          <KeyValue label="Time" value={formatTimestamp(trx.createdAt)} />
           <KeyValue label="ID" value={trx.trxId} />
-          {formatTimestamp(trx.createdAt)}
         </Typography>
       </TableCell>
       <TableCell>
-        <Typography variant="body2">{transaction.detail}</Typography>
+        <Typography variant="body2">
+          {trx.refId && <KeyValue label="Ref" value={trx.refId} />}
+          {trx.status === "completed" && transaction.detail}
+        </Typography>
       </TableCell>
     </TableRow>
   );
