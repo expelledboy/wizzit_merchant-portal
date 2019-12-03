@@ -6,6 +6,6 @@ yarn-error.log
 dist
 .vscode
 *.pem
-server/webapp/
 server/yarn.lock
+webapp/
 zap/

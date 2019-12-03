@@ -13,6 +13,9 @@ dev:
 	docker-compose down -v
 
 release:
+	yarn run build
+	rm -rf ./server/webapp
+	cp -R ./webapp/build ./server/webapp
 	docker-compose build release
 
 push: VERSION=$(shell node -p "require('./package.json').version")

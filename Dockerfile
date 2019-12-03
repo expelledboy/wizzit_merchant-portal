@@ -17,9 +17,8 @@ RUN yarn install --production
 COPY server/package.json ./
 RUN yarn install --production
 RUN cp -R node_modules node_modules.prod
-COPY . .
 RUN yarn install
-RUN yarn build
+COPY . .
 
 FROM base AS release
 COPY --from=build /opt/app/server ./

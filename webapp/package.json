@@ -71,7 +71,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "codegen": "graphql-codegen --config codegen.yml",
-    "postbuild": "rm -rf ../server/webapp && cp -R ./build ../server/webapp",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"
   }
