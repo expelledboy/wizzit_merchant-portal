@@ -6,8 +6,8 @@ export const transform = (data: any) => {
     trxId: trx_id,
     createdAt: created_at,
     status,
-    merchantId: meta.merchant_id || "Unknown",
-    type: meta.type || "Unknown",
+    merchantId: meta.merchant_id,
+    type: meta.type || "unknown",
     version: meta.version
   };
 

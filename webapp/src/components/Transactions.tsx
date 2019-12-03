@@ -127,6 +127,7 @@ const Transaction = ({ data: trx }: any) => {
           <KeyValue label="Amount" value={trx.amount} />
           <KeyValue label="MSISDN" value={trx.msisdn} />
           <KeyValue label="Response" value={trx.respCode} />
+          <KeyValue label="Reference" value={trx.refId || "None"} />
         </>
       )
     },
