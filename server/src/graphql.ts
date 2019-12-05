@@ -22,7 +22,7 @@ const typeDefs = readFileSync(path.join(__dirname, "schema.graphql"), "UTF-8");
 
 export const api = express();
 
-const context = ({ req }: { req: Request }) => {
+const context = ({ req }: any) => {
   let payload = {};
 
   try {
@@ -32,7 +32,7 @@ const context = ({ req }: { req: Request }) => {
     console.warn("Authentication failed");
   }
 
-  console.log({ payload });
+  console.log(req.body.operationName, JSON.stringify(req.body.variables));
 
   return {
     ...req,

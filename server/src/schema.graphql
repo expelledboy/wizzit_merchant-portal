@@ -124,6 +124,12 @@ type AkenAuth {
   name: String
 }
 
+input FilterInput {
+  msisdn: String
+  refId: String
+  trxId: String
+}
+
 # ==> Schema
 
 type Query {
@@ -131,7 +137,7 @@ type Query {
   users: UserPage!
   merchants: MerchantPage!
   clients(page: Int, pageSize: Int): ClientPage!
-  transactions(next: ID, limit: Int): TransactionPage!
+  transactions(next: ID, limit: Int, filter: FilterInput): TransactionPage!
   report(merchantId: ID, date: String): [Transaction]!
 }
 

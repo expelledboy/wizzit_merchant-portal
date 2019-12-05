@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { ITransaction } from "../types";
 import gql from "graphql-tag";
 import { useState } from "react";
@@ -19,13 +19,14 @@ import {
   Select,
   MenuItem
 } from "@material-ui/core";
-import { useQuery, useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/react-hooks";
 import { useEffect } from "react";
 import { exportItems } from "../@utils/exportCsv";
+import { SearchBar } from "./SearchBar";
 
 export const LOAD_MORE_TRANSACTIONS = gql`
-  query($next: ID, $limit: Int) {
-    transactions(next: $next, limit: $limit) {
+  query LOAD_MORE_TRANSACTIONS($next: ID, $limit: Int, $filter: FilterInput) {
+    transactions(next: $next, limit: $limit, filter: $filter) {
       next
       haveMore
       items {
@@ -47,7 +48,7 @@ export const LOAD_MORE_TRANSACTIONS = gql`
 `;
 
 export const TRANSACTION_REPORT = gql`
-  query($merchantId: ID, $date: String) {
+  query TRANSACTION_REPORT($merchantId: ID, $date: String) {
     report(merchantId: $merchantId, date: $date) {
       id
       type
@@ -64,7 +65,7 @@ export const TRANSACTION_REPORT = gql`
   }
 `;
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
   record: {
     margin: "2px"
   },
@@ -173,6 +174,7 @@ export function Transactions() {
     report: ITransaction[];
   }>(TRANSACTION_REPORT, {
     fetchPolicy: "no-cache",
+    displayName: "TRANSACTION_REPORT",
     onCompleted: ({ report }) => {
       exportItems(report, `wizzit-report-${month}-${year}`);
     }
@@ -181,15 +183,20 @@ export function Transactions() {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
+  const [filter, setFilter] = useState({});
 
-  const { loading, data, error, fetchMore } = useQuery<{
+  const [loadMore, { loading, data, error }] = useLazyQuery<{
     transactions: {
       next: string;
       haveMore: boolean;
       items: any[];
     };
   }>(LOAD_MORE_TRANSACTIONS, {
-    variables: { next, limit }
+    variables: { next, limit, filter },
+    displayName: "LOAD_MORE_TRANSACTIONS",
+    onCompleted: ({ transactions: { items } }) => {
+      setItems(prev => [...prev, ...items]);
+    }
   });
 
   const pickMonth = {
@@ -207,24 +214,21 @@ export function Transactions() {
   };
 
   useEffect(() => {
-    fetchMore({
-      query: LOAD_MORE_TRANSACTIONS,
-      variables: { next, limit },
-      updateQuery: (previousResult, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
-          return previousResult;
-        }
+    loadMore();
+  }, [loadMore, next, limit, filter]);
 
-        const moreItems = fetchMoreResult
-          ? fetchMoreResult.transactions.items
-          : [];
-
-        setItems(prev => [...prev, ...moreItems]);
-
-        return fetchMoreResult;
-      }
-    });
-  }, [fetchMore, next, limit]);
+  const updateFilter = useCallback((filters: any[]) => {
+    const filter = filters.reduce(
+      (acc, item) => ({
+        ...acc,
+        [item.type]: item.value
+      }),
+      {}
+    );
+    setItems([]);
+    setNext(null);
+    setFilter(filter);
+  }, []);
 
   if (error) {
     return <p>{error.message}</p>;
@@ -238,6 +242,7 @@ export function Transactions() {
   return (
     <Card>
       <CardContent>
+        <SearchBar onUpdate={updateFilter} />
         <Table>
           <TableHead>
             <TableRow>

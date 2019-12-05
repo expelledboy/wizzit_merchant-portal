@@ -14,7 +14,7 @@ const tryCatchOn = (func: any, when: string) => (...args: any[]) => {
 };
 
 export const LIST_CLIENTS = gql`
-  query clients($page: Int, $pageSize: Int) {
+  query LIST_CLIENTS($page: Int, $pageSize: Int) {
     clients(page: $page, pageSize: $pageSize) {
       total
       page
@@ -28,7 +28,7 @@ export const LIST_CLIENTS = gql`
 `;
 
 export const UPDATE_CLIENT = gql`
-  mutation updateClient($clientId: ID!, $client: UpdateClientInput!) {
+  mutation UPDATE_CLIENT($clientId: ID!, $client: UpdateClientInput!) {
     updateClient(clientId: $clientId, client: $client)
   }
 `;
@@ -47,8 +47,8 @@ export function Clients() {
       items: IClient[];
     };
   }>(LIST_CLIENTS, {
-    variables: pagination,
-    displayName: "Clients"
+    displayName: "LIST_CLIENTS",
+    variables: pagination
   });
 
   const refetchQueries = [{ query: LIST_CLIENTS, variables: pagination }];

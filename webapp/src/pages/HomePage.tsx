@@ -26,7 +26,7 @@ const useStyles = makeStyles((_theme: Theme) => ({
 }));
 
 export const CURRENT_USER = gql`
-  query {
+  query CURRENT_USER {
     me {
       id
       email
@@ -43,7 +43,9 @@ export function HomePage() {
   const classes = useStyles();
   const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
 
-  const { loading, error, data } = useQuery<{ me: IUser }>(CURRENT_USER);
+  const { loading, error, data } = useQuery<{ me: IUser }>(CURRENT_USER, {
+    displayName: "CURRENT_USER"
+  });
 
   if (token === null || token === undefined) {
     history.push("/login");

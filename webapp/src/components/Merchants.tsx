@@ -9,7 +9,7 @@ import { IMerchant } from "../types";
 // https://github.com/SergeiMeza/airbnb-fullstack/blob/77f2f7e47cceb12e98db12b306b75b85c782b52e/packages/web/src/modules/users/UsersConnector.tsx
 
 export const LIST_MERCHANTS = gql`
-  query merchants {
+  query LIST_MERCHANTS {
     merchants {
       total
       items {
@@ -26,19 +26,19 @@ export const LIST_MERCHANTS = gql`
 `;
 
 export const DELETE_MERCHANT = gql`
-  mutation deleteMerchant($id: ID!) {
+  mutation DELETE_MERCHANT($id: ID!) {
     deleteMerchant(id: $id)
   }
 `;
 
 export const CREATE_MERCHANT = gql`
-  mutation createMerchant($merchant: CreateMerchantInput!) {
+  mutation CREATE_MERCHANT($merchant: CreateMerchantInput!) {
     createMerchant(merchant: $merchant)
   }
 `;
 
 export const UPDATE_MERCHANT = gql`
-  mutation updateMerchant($id: ID!, $merchant: UpdateMerchantInput!) {
+  mutation UPDATE_MERCHANT($id: ID!, $merchant: UpdateMerchantInput!) {
     updateMerchant(id: $id, merchant: $merchant)
   }
 `;
@@ -58,7 +58,7 @@ export function Merchants() {
       items: IMerchant[];
     };
   }>(LIST_MERCHANTS, {
-    displayName: "Merchants"
+    displayName: "LIST_MERCHANTS"
   });
 
   const refetchQueries = [{ query: LIST_MERCHANTS }];

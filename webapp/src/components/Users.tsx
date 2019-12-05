@@ -6,7 +6,7 @@ import { IUser, IMerchant } from "../types";
 import { FormControl, Select, MenuItem } from "@material-ui/core";
 
 export const LIST_USERS = gql`
-  query users {
+  query LIST_USERS {
     users {
       total
       items {
@@ -28,7 +28,7 @@ export const LIST_USERS = gql`
 `;
 
 export const LIST_MERCHANTS = gql`
-  query merchants {
+  query LIST_MERCHANTS {
     merchants {
       total
       items {
@@ -40,7 +40,7 @@ export const LIST_MERCHANTS = gql`
 `;
 
 export const UPDATE_USER = gql`
-  mutation updateUser($id: ID!, $user: UpdateUserInput!) {
+  mutation UPDATE_USER($id: ID!, $user: UpdateUserInput!) {
     updateUser(id: $id, user: $user)
   }
 `;

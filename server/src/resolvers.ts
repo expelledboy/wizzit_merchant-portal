@@ -157,12 +157,17 @@ const updateClient = async (_parent: any, { clientId, client }, { db }) => {
 
 const transactions = async (
   _parent: any,
-  { next, limit = 10 }: any,
+  { next, limit = 10, filter = {} }: any,
   { merchantId, txEngine }: any
 ) => {
+  const { msisdn, trxId, refId } = filter;
+
   const request = {
     query: {
-      ...(merchantId && { merchant_id: merchantId })
+      ...(merchantId && { merchant_id: merchantId }),
+      ...(trxId && { trx_id: trxId }),
+      ...(refId && { ref_id: refId }),
+      ...(msisdn && { msisdn })
     },
     limit,
     ...(next && { next })
