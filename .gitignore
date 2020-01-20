@@ -7,5 +7,5 @@ dist
 .vscode
 *.pem
 server/yarn.lock
-webapp/
+server/webapp/
 zap/
